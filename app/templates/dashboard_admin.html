@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Jsi přihlášen jako admin!</h1>
+<table border="1" cellpadding="5" cellspacing="0">
+  <tr>
+    <th>ID</th>
+    <th>Značka</th>
+    <th>Datum</th>
+    <th>Poznámka</th>
+    <th>Práce</th>
+    <!--<th>Mechanik</th>-->
+  </tr>
+  {% for o in objednavky %}
+  <tr>
+    <td>{{ o.id_objednavky }}</td>
+    <td>{{ o.znacka }}</td>
+    <td>{{ o.datum }}</td>
+    <td>{{ o.poznamka }}</td>
+    <td>
+      {% for s in o.servisy %}
+        {{ s.prace_nazev }}<br>
+      {% endfor %}
+    </td> <!--
+    <td>
+    {% for s in o.servisy %}
+ <form action="/dashboard/admin/pridel_mechanik" method="post">
+    <input type="hidden" name="id_servisu" value="{{ s.id }}">
+    <select name="id_mechanik">
+         
+        <option value="" disabled {% if s.id_mechanik is none %}selected{% endif %}>
+            -- Vyber mechanika --
+        </option>
+
+        {% for m in mechanici %}
+            <option value="{{ m.id_uzivatele }}"
+                {% if s.id_mechanik == m.id_uzivatele %}selected{% endif %}>
+                {{ m.jmeno }} {{ m.prijmeni }}
+                <p>DEBUG: {{ s.id_mechanik }}</p>
+
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Uložit</button>
+</form>
+
+{% endfor %}
+
+    </td>
+-->
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

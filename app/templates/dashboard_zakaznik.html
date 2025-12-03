@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Moje objednávky</h2>
+
+<a href="/objednavka/nova" class="btn btn-primary">➕ Vytvořit novou objednávku</a>
+<br><br>
+
+{% if objednavky %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Datum a čas</th>
+            <th>Značka</th>
+            <th>Poznámka</th>
+            <th>Stav</th>
+            <th>Práce</th> <!-- nový sloupec -->
+        </tr>
+        {% for o in objednavky %}
+        <tr>
+            <td>{{ o.id_objednavky }}</td>
+            <td>{{ o.datum }}</td>
+            <td>{{ o.znacka }}</td>
+            <td>{{ o.poznamka or "-" }}</td>
+            <td>{{ o.stav }}</td>
+            <td>
+                {% if o.servisy %}
+                    <ul>
+                    {% for s in o.servisy %}
+                        <li>{{ s.prace_nazev or "Neznámá práce" }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    žádné servisní položky
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Žádné objednávky.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Nová objednávka{% endblock %}
+
+{% block content %}
+<h2>Nová objednávka</h2>
+
+<form method="post">
+    <label for="datum">Datum a čas:</label><br>
+    <input type="datetime-local" id="datum" name="datum" required><br><br>
+
+    <label for="znacka">Značka auta:</label><br>
+    <input type="text" id="znacka" name="znacka" required><br><br>
+
+    <label for="poznamka">Poznámka:</label><br>
+    <textarea id="poznamka" name="poznamka" rows="3"></textarea><br><br>
+
+    <label for="id_prace">Práce:</label><br>
+    <select id="id_prace" name="id_prace" required>
+        {% for p in prace %}
+            <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Vytvořit objednávku</button>
+</form>
+{% endblock %}
