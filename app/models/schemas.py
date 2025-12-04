@@ -75,6 +75,8 @@ class ObjednavkaPublic(BaseModel):
     id_stavu: int
     stav: str
     servisy: list[ServisPublic] = []  # default prázdný seznam
+    total_cena: float = 0.0
+    total_cas: float = 0.0
 
 
 class ObjednavkaCreate(BaseModel):

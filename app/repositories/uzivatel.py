@@ -73,3 +73,13 @@ def delete_user(id_uzivatele: int) -> bool:
         cur = c.execute("DELETE FROM Uzivatel WHERE ID_uzivatele = ?", (id_uzivatele,))
         c.commit()
     return cur.rowcount > 0
+
+def update_user_data(id_uzivatele: int, login: str, jmeno: str, prijmeni: str, id_role: int):
+    """Aktualizuje základní údaje uživatele (bez hesla)"""
+    with get_conn() as c:
+        c.execute("""
+            UPDATE Uzivatel 
+            SET login = ?, jmeno = ?, prijmeni = ?, ID_role = ?
+            WHERE ID_uzivatele = ?
+        """, (login, jmeno, prijmeni, id_role, id_uzivatele))
+        c.commit()

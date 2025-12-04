@@ -71,3 +71,25 @@ def list_servisy_for_objednavka(id_obj: int) -> list[dict]:
             WHERE s.ID_objednavky = ?
         """, (id_obj,)).fetchall()
     return [dict(r) for r in rows]
+
+def update_servis_price_time(id_servisu: int, cas: float | None, cena: float | None):
+    """Aktualizuje čas a cenu u servisní položky"""
+    with open_conn() as c:
+        c.execute("""
+            UPDATE Servis
+            SET cas = ?, cena = ?
+            WHERE ID_servisu = ?
+        """, (cas, cena, id_servisu))
+        c.commit()
+    
+def assign_mechanik_to_whole_order(id_obj: int, id_mechanik: int):
+    """
+    Přiřadí mechanika ke VŠEM servisním úkonům v dané objednávce.
+    """
+    with open_conn() as c:
+        c.execute("""
+            UPDATE Servis
+            SET ID_uzivatele = ?
+            WHERE ID_objednavky = ?
+        """, (id_mechanik, id_obj))
+        c.commit()

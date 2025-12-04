@@ -1,9 +1,12 @@
 from app.repositories import objednavka as repo
 from app.repositories import servis as repo_servis
 from app.repositories import stavobjednavky as repo_stav
+from app.repositories import prace as repo_prace
 from app.models.schemas import ObjednavkaPublic, ObjednavkaCreate
 from app.models.schemas import ServisPublic
 from typing import List
+
+HOURLY_RATE = 800.0
 
 class ObjednavkaService:
     """Service vrstva pro objednávky"""
@@ -48,10 +51,10 @@ class ObjednavkaService:
         result = []
         for r in rows:
             stav_nazev = repo_stav.get_stav_by_id(r["ID_stavu"]) or "Neznámý stav"
-            
-            # ZDE POUŽIJEME NOVOU METODU
             servisy_db = repo_servis.list_servisy_for_objednavka(r["ID_objednavky"])
             servisy = self._map_servisy(servisy_db)
+            sum_cena = sum((s.cena or 0) for s in servisy)
+            sum_cas = sum((s.cas or 0) for s in servisy)
 
             result.append(
                 ObjednavkaPublic(
@@ -62,7 +65,9 @@ class ObjednavkaService:
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev,
                     id_stavu=r["ID_stavu"],
-                    servisy=servisy
+                    servisy=servisy,
+                    total_cena=sum_cena,
+                    total_cas=sum_cas
                 )
             )
         return result
@@ -72,10 +77,10 @@ class ObjednavkaService:
         result = []
         for r in rows:
             stav_nazev = repo_stav.get_stav_by_id(r["ID_stavu"])
-            
-            # ZDE POUŽIJEME NOVOU METODU
             servisy_raw = repo_servis.list_servisy_for_objednavka(r["ID_objednavky"])
             servisy = self._map_servisy(servisy_raw)
+            sum_cena = sum((s.cena or 0) for s in servisy)
+            sum_cas = sum((s.cas or 0) for s in servisy)
 
             result.append(
                 ObjednavkaPublic(
@@ -86,7 +91,9 @@ class ObjednavkaService:
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev if stav_nazev else "Neznámý stav",
                     id_stavu=r["ID_stavu"],
-                    servisy=servisy
+                    servisy=servisy,
+                    total_cena=sum_cena,
+                    total_cas=sum_cas
                 )
             )
         return result
@@ -107,6 +114,20 @@ class ObjednavkaService:
 
     def add_prace(self, id_obj: int, id_prace: int, id_mechanik: int | None = None,
                   cas: float | None = None, cena: float | None = None):
+        """
+        Přiřadí práci k objednávce.
+        Pokud není zadán čas/cena, pokusí se je načíst z definice práce (default).
+        """
+        
+        # Pokud nebylo zadáno ručně (např. adminem), zkusíme najít default v DB
+        if cas is None:
+            prace_info = repo_prace.get_by_id(id_prace)
+            if prace_info and prace_info.get("odhad_hodin"):
+                cas = float(prace_info["odhad_hodin"])
+                # Rovnou předpočítáme cenu (pokud není zadaná)
+                if cena is None:
+                    cena = cas * HOURLY_RATE
+
         return repo_servis.add_prace_to_objednavka(
             id_obj=id_obj,
             id_prace=id_prace,
@@ -130,6 +151,7 @@ class ObjednavkaService:
             # Zbytek logiky je stejný jako v list_all - načteme stav a servisní položky
             stav_nazev = repo_stav.get_stav_by_id(r["ID_stavu"]) or "Neznámý stav"
             servisy_db = repo_servis.list_servisy_for_objednavka(r["ID_objednavky"])
+            
 
             servisy = [
                 ServisPublic(
@@ -153,7 +175,8 @@ class ObjednavkaService:
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev,
                     id_stavu=r["ID_stavu"],
-                    servisy=servisy
+                    servisy=servisy,
+                    
                 )
             )
         return result
@@ -169,7 +192,20 @@ class ObjednavkaService:
         current_status = obj["ID_stavu"]
         
         # Kontrola stavu
-        if current_status in [3, 4]:
+        if current_status in [1, 3, 4]:
             repo.delete_objednavka(id_obj)
         else:
             raise ValueError("Lze smazat pouze objednávky ve stavu Hotovo nebo Stornováno.")
+
+    def nacenit_praci(self, id_servisu: int, cas: float, cena: float = None):
+        """
+        Admin zadá čas. Pokud nezadá cenu, vypočítá se automaticky (čas * sazba).
+        """
+        if cena is None or cena == 0:
+            cena = cas * HOURLY_RATE
+            
+        repo_servis.update_servis_price_time(id_servisu, cas, cena)
+
+    def assign_mechanik_to_order(self, id_obj: int, id_mechanik: int):
+        """Přiřadí mechanika k celé objednávce"""
+        repo_servis.assign_mechanik_to_whole_order(id_obj, id_mechanik)

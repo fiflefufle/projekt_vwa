@@ -6,15 +6,21 @@
 <div class="auth-container" style="max-width: 600px;">
     <h2>Nová objednávka</h2>
 
+    {% if chyba %}
+        <div class="alert alert-danger">
+            {{ chyba }}
+        </div>
+    {% endif %}
     <form method="post">
         <label for="datum">Datum a čas:</label>
-        <input type="datetime-local" id="datum" name="datum" required>
+        <input type="datetime-local" id="datePicker" name="datum" value="{{ datum or '' }}" required>
+        <small class="text-muted" style="display: block; margin-top: -10px; margin-bottom: 15px;">Otevírací doba: Po-Pá 8:00 - 16:00</small>
 
         <label for="znacka">Značka auta:</label>
-        <input type="text" id="znacka" name="znacka" required>
+        <input type="text" id="znacka" name="znacka" value="{{ znacka or '' }}" required>
 
         <label for="poznamka">Poznámka:</label>
-        <textarea id="poznamka" name="poznamka" rows="3"></textarea>
+        <textarea id="poznamka" name="poznamka" rows="3">{{ poznamka or '' }}</textarea>
 
         <label>Požadované práce:</label>
         <div id="prace-container">
@@ -35,16 +41,4 @@
         <button type="submit" class="btn-block btn-success">Vytvořit objednávku</button>
     </form>
 </div>
-
-<script>
-    document.getElementById('btn-pridat').addEventListener('click', function() {
-        const container = document.getElementById('prace-container');
-        const firstRow = container.querySelector('.prace-row');
-        const newRow = firstRow.cloneNode(true);
-        const select = newRow.querySelector('select');
-        select.value = ""; 
-        newRow.classList.add('mt-2'); // Použití třídy místo inline stylu
-        container.appendChild(newRow);
-    });
-</script>
 {% endblock %}

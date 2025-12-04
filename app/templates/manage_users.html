@@ -43,14 +43,18 @@
             <td>{{ u.jmeno }} {{ u.prijmeni }}</td>
             <td>{{ u.role }}</td>
             <td>
+                <div class="d-flex gap-sm">
+                <a href="/dashboard/admin/users/edit/{{ u.id }}" class="btn btn-small btn-secondary">Upravit</a>
                 <form action="/dashboard/admin/users/delete" method="post" onsubmit="return confirm('Opravdu smazat uživatele {{ u.login }}?');" class="m-0">
                     <input type="hidden" name="id_uzivatele" value="{{ u.id }}">
                     <button type="submit" class="btn-small btn-danger">Smazat</button>
                 </form>
             </td>
+            
         </tr>
         {% endfor %}
     </table>
 </div>
+
 
 {% endblock %}

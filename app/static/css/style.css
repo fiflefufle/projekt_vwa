@@ -130,49 +130,84 @@ input:focus, textarea:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
 }
 
-/* --- TLAČÍTKA --- */
-button, .btn, .btn-primary {
-    display: inline-block;
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+/* --- TLAČÍTKA - DEFINICE --- */
+
+/* 1. SPOLEČNÝ TVAR A CHOVÁNÍ (Platí pro všechna tlačítka) */
+button, .btn {
+    /* Reset systémového vzhledu */
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    
+    /* Flexbox pro centrování */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Fixní rozměry */
+    height: 40px;
+    padding: 0 20px;
+    margin: 0;
+    
+    /* Typografie */
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 600;
-    text-align: center;
-    transition: background-color 0.2s;
-}
-
-button:hover, .btn:hover, .btn-primary:hover {
-    background-color: #004494;
+    line-height: 1;
     text-decoration: none;
+    text-align: center;
+    
+    /* Rámeček a zakulacení */
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: filter 0.2s, background-color 0.2s;
+    
+    /* Výchozí barva písma */
+    color: var(--white);
 }
 
-.btn-small {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+/* 2. BARVY (Musí být definovány AŽ PO společném základu) */
+
+/* Výchozí modrá (pro obyčejný <button> a .btn-primary) */
+button, .btn-primary {
+    background-color: var(--primary-color);
 }
 
-.btn-danger {
-    background-color: var(--danger-color);
-}
-
-.btn-danger:hover {
-    background-color: #bd2130;
-}
-
-.btn-success {
-    background-color: var(--success-color);
-}
-
+/* Šedá (Zrušit, Zpět) */
 .btn-secondary {
     background-color: var(--secondary-color);
 }
 
+/* Červená (Smazat) */
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+/* Zelená (Úspěch, Přidat) */
+.btn-success {
+    background-color: var(--success-color);
+}
+
+/* Hover efekt pro všechny (ztmaví/zesvětlí barvu) */
+button:hover, .btn:hover {
+    filter: brightness(110%);
+    text-decoration: none;
+    color: var(--white);
+}
+
+/* 3. VELIKOSTI */
+
+/* Malá tlačítka */
+.btn-small {
+    height: 30px !important;
+    padding: 0 10px !important;
+    font-size: 0.85rem !important;
+}
+
+/* Tlačítka přes celou šířku */
 .btn-block {
-    display: block;
+    display: flex;
     width: 100%;
 }
 

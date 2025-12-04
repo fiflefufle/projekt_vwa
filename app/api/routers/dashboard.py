@@ -94,22 +94,24 @@ def dashboard_admin(request: Request, user: dict = Depends(require_admin)):
     )
 
 
-@router.post("/dashboard/admin/pridel_mechanik")
-def pridel_mechanik(
-    id_servisu: int = Form(...),
-    id_mechanik: str = Form("")
+@router.post("/dashboard/admin/pridel_mechanik_objednavka")
+def pridel_mechanik_objednavka(
+    id_obj: int = Form(...),          # ZMĚNA: Přijímáme ID objednávky
+    id_mechanik: str = Form(""),
+    user: dict = Depends(require_admin)
 ):
     if id_mechanik == "":
-        raise HTTPException(400, "Musíte vybrat mechanika.")
+        # Pokud admin vybral "Vyber mechanika" (prázdná hodnota), nic neděláme nebo vyhodíme chybu
+        # Zde jen přesměrujeme zpět
+        return RedirectResponse("/dashboard/admin", status_code=303)
 
     try:
         id_mechanik_int = int(id_mechanik)
     except ValueError:
         raise HTTPException(400, "Neplatná hodnota mechanika.")
 
-    # OPRAVA: Voláme service vrstvu (obj_service), která už je nahoře inicializovaná.
-    # Service vrstva pak správně zavolá repo_servis.assign_mechanik
-    obj_service.assign_mechanik(id_servisu, id_mechanik_int)
+    # Voláme hromadné přiřazení
+    obj_service.assign_mechanik_to_order(id_obj, id_mechanik_int)
 
     return RedirectResponse("/dashboard/admin", status_code=303)
 
@@ -209,5 +211,69 @@ def pridat_praci_admin(
     """
     # Použijeme existující service metodu
     obj_service.add_prace(id_obj=id_obj, id_prace=id_prace)
+    
+    return RedirectResponse("/dashboard/admin", status_code=303)
+
+# GET: Zobrazit formulář pro editaci
+@router.get("/dashboard/admin/users/edit/{user_id}", response_class=HTMLResponse)
+def admin_user_edit_form(user_id: int, request: Request, user: dict = Depends(require_admin)):
+    # Načteme data uživatele
+    user_to_edit = uzivatel_service.get_user(user_id)
+    if not user_to_edit:
+        return RedirectResponse("/dashboard/admin/users", status_code=303)
+        
+    roles = uzivatel_service.list_roles()
+    
+    return templates.TemplateResponse(
+        "admin_user_edit.html", 
+        {
+            "request": request, 
+            "u": user_to_edit, 
+            "roles": roles
+        }
+    )
+
+# POST: Uložit změny
+@router.post("/dashboard/admin/users/edit/{user_id}")
+def admin_user_edit_submit(
+    user_id: int,
+    login: str = Form(...),
+    jmeno: str = Form(...),
+    prijmeni: str = Form(...),
+    id_role: int = Form(...),
+    password: str = Form(""), # Nepovinné, default prázdný string
+    user: dict = Depends(require_admin)
+):
+    # Vytvoříme objekt (heslo pošleme dál, service rozhodne jestli ho hashovat)
+    data = UzivatelCreate(
+        login=login,
+        jmeno=jmeno,
+        prijmeni=prijmeni,
+        heslo=password 
+    )
+    
+    uzivatel_service.update_user_complete(user_id, data, id_role)
+    
+    return RedirectResponse("/dashboard/admin/users", status_code=303)
+
+@router.post("/dashboard/admin/nacenit_praci")
+def admin_nacenit_praci(
+    id_servisu: int = Form(...),
+    cas: float = Form(...),
+    # ZMĚNA: Přijímáme 'str' místo 'float', abychom zachytili prázdný řetězec ""
+    cena: str = Form(None), 
+    user: dict = Depends(require_admin)
+):
+    # Ruční převod: pokud je cena prázdná, nastavíme None
+    cena_float = None
+    if cena and cena.strip() != "":
+        try:
+            cena_float = float(cena)
+        except ValueError:
+            # Pojistka pro případ, že by tam někdo napsal text místo čísla
+            raise HTTPException(status_code=400, detail="Cena musí být číslo.")
+
+    # Voláme službu s převedenou hodnotou (None nebo float)
+    obj_service.nacenit_praci(id_servisu, cas, cena_float)
     
     return RedirectResponse("/dashboard/admin", status_code=303)

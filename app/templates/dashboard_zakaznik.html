@@ -5,7 +5,7 @@
 <h2>Moje objednávky</h2>
 
 <div class="dashboard-actions">
-    <a href="/objednavka/nova" class="btn btn-primary">➕ Vytvořit novou objednávku</a>
+    <a href="/objednavka/nova" class="btn btn-primary">Vytvořit novou objednávku</a>
 </div>
 
 {% if objednavky %}
@@ -29,10 +29,30 @@
                 <td>
                     {% if o.servisy %}
                         <ul class="service-list m-0 p-0">
-                        {% for s in o.servisy %}
-                            <li class="p-0 border-0">{{ s.prace_nazev or "Neznámá práce" }}</li>
-                        {% endfor %}
+                            {% for s in o.servisy %}
+                                <li class="p-0 border-0">
+                                    {{ s.prace_nazev }}
+                                    {% if s.cena %}
+                                        <span class="text-muted" style="font-size: 0.85em;">
+                                            ({{ s.cas }}h - {{ s.cena }} Kč)
+                                        </span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
                         </ul>
+                        
+                        {% if o.total_cena > 0 %}
+                            <div style="margin-top: 10px; border-top: 1px solid #ccc; padding-top: 5px; font-weight: bold; color: var(--primary-color);">
+                                Celkem odhad: {{ o.total_cena }} Kč
+                                <span style="font-size: 0.8em; font-weight: normal; color: #666;">
+                                    (cca {{ o.total_cas }} hod)
+                                </span>
+                            </div>
+                        {% else %}
+                            <div style="margin-top: 5px; font-size: 0.85em; color: #999; font-style: italic;">
+                                Čeká na nacenění
+                            </div>
+                        {% endif %}
                     {% else %}
                         <span class="no-mechanic">žádné položky</span>
                     {% endif %}

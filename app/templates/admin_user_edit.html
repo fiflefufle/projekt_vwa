@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Úprava uživatele{% endblock %}
+{% block content %}
+
+<div class="auth-container w-100" style="max-width: 500px;">
+    <h3>Úprava uživatele: {{ u.login }}</h3>
+    
+    <form action="/dashboard/admin/users/edit/{{ u.id }}" method="post">
+        
+        <label>Login:</label>
+        <input type="text" name="login" value="{{ u.login }}" required>
+        
+        <label>Jméno:</label>
+        <input type="text" name="jmeno" value="{{ u.jmeno }}" required>
+        
+        <label>Příjmení:</label>
+        <input type="text" name="prijmeni" value="{{ u.prijmeni }}" required>
+        
+        <label>Role:</label>
+        <select name="id_role" required>
+            {% for r in roles %}
+                <option value="{{ r.ID_role }}" {% if r.nazev_role == u.role %}selected{% endif %}>
+                    {{ r.nazev_role }}
+                </option>
+            {% endfor %}
+        </select>
+        
+        <label>Heslo (nevyplňujte, pokud nechcete měnit):</label>
+        <input type="password" name="password" placeholder="Nové heslo (volitelné)">
+        
+        <div class="d-flex gap-md mt-2">
+            <button type="submit" class="btn-primary">Uložit změny</button>
+            <a href="/dashboard/admin/users" class="btn btn-secondary">Zrušit</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

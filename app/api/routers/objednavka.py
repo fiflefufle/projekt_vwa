@@ -38,25 +38,35 @@ def nova_objednavka_submit(
     datum: str = Form(...),
     znacka: str = Form(...),
     poznamka: str = Form(""),
-    # ZMĚNA ZDE: Přijímáme seznam integerů (List[int])
-    id_prace: List[int] = Form(...) 
+    id_prace: List[int] = Form(...)
 ):
-    # převede string z datetime-local na datetime objekt
-    datum_obj = datetime.fromisoformat(datum)
+    # 1. Převod na datetime
+    try:
+        datum_obj = datetime.fromisoformat(datum)
+    except ValueError:
+        return _vratit_formular_s_chybou(request, user, "Neplatný formát data.", datum, znacka, poznamka)
 
-    # 1. Vytvoření samotné objednávky (hlavička)
-    # Poznámka: Z data pro vytvoření objednávky jsme vyhodili id_prace, 
-    # protože to už není jedno číslo, ale řešíme to smyčkou níže.
+    # 2. VALIDACE: Minulost
+    if datum_obj < datetime.now():
+        return _vratit_formular_s_chybou(request, user, "Nelze objednat termín v minulosti.", datum, znacka, poznamka)
+
+    # 3. VALIDACE: Otevírací doba (např. 8:00 - 16:00, Pondělí-Pátek)
+    if datum_obj.weekday() >= 5: # 5 a 6 je víkend
+         return _vratit_formular_s_chybou(request, user, "O víkendu máme zavřeno.", datum, znacka, poznamka)
+         
+    start_hour = 8
+    end_hour = 16
+    if not (start_hour <= datum_obj.hour < end_hour):
+        return _vratit_formular_s_chybou(request, user, f"Máme otevřeno pouze {start_hour}:00 - {end_hour}:00.", datum, znacka, poznamka)
+
     data = ObjednavkaCreate(
         datum=datum_obj,
         znacka=znacka,
         poznamka=poznamka
     )
 
-    # Uložíme objednávku do DB a získáme její nové ID
     objednavka = obj_service.create(id_uzivatele=user["id"], data=data)
     
-    # 2. Cyklus pro uložení všech vybraných prací
     for jedno_id_prace in id_prace:
         obj_service.add_prace(
             id_obj=objednavka.id_objednavky, 
@@ -64,3 +74,21 @@ def nova_objednavka_submit(
         )
 
     return RedirectResponse("/dashboard/zakaznik", status_code=303)
+
+def _vratit_formular_s_chybou(request, user, chyba_msg, datum="", znacka="", poznamka=""):
+    """
+    Vrátí formulář s chybou a PŘEDVYPLNĚNÝMI daty, aby je uživatel nemusel psát znovu.
+    """
+    prace = prace_service.list_all()
+    return templates.TemplateResponse(
+        "objednavka_nova.html",
+        {
+            "request": request,
+            "prace": prace,
+            "chyba": chyba_msg,
+            # Posíláme data zpět do šablony
+            "datum": datum,
+            "znacka": znacka,
+            "poznamka": poznamka
+        }
+    )

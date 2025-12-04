@@ -5,8 +5,14 @@
 <h1>Naše služby</h1>
 <ul class="service-list">
   {% for p in prace %}
-    <li class="service-item">
-        🔧 {{ p }}
+    <li class="service-item d-flex align-items-center gap-md">
+        <span><strong>{{ p.nazev_prace }}</strong></span>
+        
+        {% if p.odhad_hodin %}
+            <span class="text-muted" style="font-size: 0.9em;">
+                (cca {{ p.odhad_hodin }} hod.)
+            </span>
+        {% endif %}
     </li>
   {% endfor %}
 </ul>
