@@ -28,54 +28,40 @@
             <td>{{ o.stav }}</td>
             
             <td class="admin-work-cell">
-                
                 {% for s in o.servisy %}
-                    <div class="work-item d-flex flex-column gap-sm" style="border-bottom: 2px dashed #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div class="work-item-separator d-flex flex-column gap-sm">
                         <div style="font-weight: bold;">{{ s.prace_nazev }}</div>
                         
                         {% if s.id_mechanik %}
                             <div class="text-muted" style="font-size: 0.85em;">
-                                🔧 Přiřazen: ID {{ s.id_mechanik }}
-                                </div>
+                                🔧 ID mechanika: {{ s.id_mechanik }}
+                            </div>
                         {% endif %}
 
-                        <form action="/dashboard/admin/nacenit_praci" method="post" class="inline-form mt-2" style="background: #f8f9fa; padding: 5px; border-radius: 4px;">
+                        <form action="/dashboard/admin/nacenit_praci" method="post" class="inline-form mt-2 pricing-box">
                             <input type="hidden" name="id_servisu" value="{{ s.id }}">
                             
                             <div class="d-flex gap-sm align-items-center">
-                                <label style="margin:0; font-size: 0.8em;">Čas:</label>
+                                <label class="label-compact">Čas (h):</label>
                                 <input type="number" step="0.1" name="cas" value="{{ s.cas or '' }}" required 
-                                       class="m-0" style="width: 50px; padding: 2px;" placeholder="0.0">
+                                       class="input-compact w-time" placeholder="0.0">
                                        
-                                <label style="margin:0; font-size: 0.8em;">Kč:</label>
+                                <label class="label-compact">Cena:</label>
                                 <input type="number" step="1" name="cena" value="{{ s.cena or '' }}" 
-                                       class="m-0" style="width: 70px; padding: 2px;" placeholder="Auto">
+                                       class="input-compact w-price" placeholder="Auto">
                                        
-                                <button type="submit" class="btn-small btn-secondary" title="Uložit">💾</button>
+                                <button type="submit" class="btn-small btn-secondary" title="Uložit odhad">💾</button>
                             </div>
                         </form>
                     </div>
                 {% endfor %}
 
-                <form action="/dashboard/admin/pridat_praci" method="post" class="add-work-form mb-2">
-                    <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
-                    <div class="d-flex gap-sm">
-                        <select name="id_prace" required class="m-0">
-                            <option value="" disabled selected>+ Práce</option>
-                            {% for p in prace %}
-                                <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn-small">Add</button>
-                    </div>
-                </form>
-
-                <div style="background-color: #e9ecef; padding: 8px; border-radius: 4px; margin-top: 15px;">
-                    <div style="font-size: 0.85em; font-weight: bold; margin-bottom: 5px;">Hlavní mechanik zakázky:</div>
+                <div class="mechanic-assign-box">
+                    <div class="mechanic-assign-title">Hlavní mechanik zakázky:</div>
                     <form action="/dashboard/admin/pridel_mechanik_objednavka" method="post" class="inline-form">
                         <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
-                        <select name="id_mechanik" class="w-auto m-0 btn-small">
-                            <option value="" disabled selected>-- Vybrat mechanika --</option>
+                        <select name="id_mechanik" class="select-compact">
+                            <option value="" disabled selected>-- Vybrat --</option>
                             {% for m in mechanici %}
                                 <option value="{{ m.ID_uzivatele }}" 
                                     {% if o.servisy and o.servisy[0].id_mechanik == m.ID_uzivatele %}selected{% endif %}>
@@ -83,10 +69,22 @@
                                 </option>
                             {% endfor %}
                         </select>
-                        <button type="submit" class="btn-small btn-primary">Přiřadit všem</button>
+                        <button type="submit" class="btn-small btn-secondary">Přiřadit</button>
                     </form>
                 </div>
 
+                <form action="/dashboard/admin/pridat_praci" method="post" class="add-work-form">
+                    <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
+                    <div class="d-flex gap-sm">
+                        <select name="id_prace" required class="select-compact" style="flex-grow: 1;">
+                            <option value="" disabled selected>+ Přidat práci</option>
+                            {% for p in prace %}
+                                <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-small">Přidat</button>
+                    </div>
+                </form>
             </td>
 
             <td>

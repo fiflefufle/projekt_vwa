@@ -28,12 +28,12 @@
                 <td>{{ o.stav }}</td>
                 <td>
                     {% if o.servisy %}
-                        <ul class="service-list m-0 p-0">
+                        <ul class="list-clean">
                             {% for s in o.servisy %}
-                                <li class="p-0 border-0">
+                                <li>
                                     {{ s.prace_nazev }}
                                     {% if s.cena %}
-                                        <span class="text-muted" style="font-size: 0.85em;">
+                                        <span class="text-muted text-small">
                                             ({{ s.cas }}h - {{ s.cena }} Kč)
                                         </span>
                                     {% endif %}
@@ -42,14 +42,14 @@
                         </ul>
                         
                         {% if o.total_cena > 0 %}
-                            <div style="margin-top: 10px; border-top: 1px solid #ccc; padding-top: 5px; font-weight: bold; color: var(--primary-color);">
+                            <div class="total-summary">
                                 Celkem odhad: {{ o.total_cena }} Kč
-                                <span style="font-size: 0.8em; font-weight: normal; color: #666;">
+                                <span class="total-summary-note">
                                     (cca {{ o.total_cas }} hod)
                                 </span>
                             </div>
                         {% else %}
-                            <div style="margin-top: 5px; font-size: 0.85em; color: #999; font-style: italic;">
+                            <div class="status-pending">
                                 Čeká na nacenění
                             </div>
                         {% endif %}
