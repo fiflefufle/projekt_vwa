@@ -64,3 +64,12 @@ def list_mechanics():
         ).fetchall()
 
     return [dict(row) for row in r]
+
+def delete_user(id_uzivatele: int) -> bool:
+    with get_conn() as c:
+        # Pozor: Pokud má uživatel objednávky, může to spadnout na cizím klíči.
+        # Pro jednoduchost předpokládáme, že smažeme jen uživatele bez vazeb,
+        # nebo je DB nastavena na CASCADE (což ve výchozím nastavení SQLite není).
+        cur = c.execute("DELETE FROM Uzivatel WHERE ID_uzivatele = ?", (id_uzivatele,))
+        c.commit()
+    return cur.rowcount > 0

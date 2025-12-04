@@ -45,3 +45,74 @@ def login_user(request: Request, response: Response,
             "login.html",
             {"request": request, "chyba": "Neplatné přihlášení"}
         )
+
+# ---------------------------------
+# Logout (Odhlášení)
+# ---------------------------------
+@router.get("/logout")
+def logout():
+    """
+    Odhlásí uživatele tím, že smaže cookie s tokenem.
+    """
+    response = RedirectResponse(url="/", status_code=303)
+    
+    # Smazání cookie 'access_token'
+    response.delete_cookie(ACCESS_COOKIE)
+    
+    return response
+
+# ---------------------------------
+# REGISTRACE
+# ---------------------------------
+@router.get("/register")
+def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+@router.post("/register")
+def register_submit(
+    request: Request,
+    login: str = Form(...),
+    jmeno: str = Form(...),
+    prijmeni: str = Form(...),
+    password: str = Form(...),
+    password_check: str = Form(...)
+):
+    # 1. Kontrola, zda se hesla shodují
+    if password != password_check:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "chyba": "Hesla se neshodují.",
+                "login": login,
+                "jmeno": jmeno,
+                "prijmeni": prijmeni
+            }
+        )
+
+    # 2. Vytvoření uživatele přes AuthService
+    # ID_role = 3 (Zákazník) - Předpokládáme, že 1=Admin, 2=Mechanik
+    result = auth_service.pridej_uzivatele(
+        login=login,
+        jmeno=jmeno,
+        prijmeni=prijmeni,
+        password=password,
+        id_role=1 
+    )
+
+    # 3. Kontrola, zda login už neexistuje (funkce vrací dict s klíčem "chyba")
+    if "chyba" in result:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "chyba": result["chyba"], # "Login již existuje"
+                "login": login,
+                "jmeno": jmeno,
+                "prijmeni": prijmeni
+            }
+        )
+    
+    # 4. Úspěšná registrace -> přesměrování na login
+    # Můžeme přidat parametr do URL pro zobrazení zprávy
+    return RedirectResponse("/login?registered=1", status_code=303)

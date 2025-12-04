@@ -15,15 +15,45 @@
     <label for="poznamka">Poznámka:</label>
     <textarea id="poznamka" name="poznamka" rows="3"></textarea>
 
-    <label>Požadované práce:</label>
-    <div class="checkbox-container">
-        {% for p in prace %}
-            <label class="checkbox-label">
-                <input type="checkbox" name="id_prace" value="{{ p.ID_prace }}">
-                {{ p.nazev_prace }}
-            </label>
-        {% endfor %}
+   <label>Požadované práce:</label>
+    
+    <div id="prace-container">
+        <div class="prace-row">
+            <select name="id_prace" required>
+                <option value="" disabled selected>-- Vyberte práci --</option>
+                {% for p in prace %}
+                    <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
+
+    <button type="button" id="btn-pridat" class="btn-small" style="margin-top: 5px; margin-bottom: 15px;">
+        + Přidat další práci
+    </button>
+
+    <script>
+        document.getElementById('btn-pridat').addEventListener('click', function() {
+            // Najdeme kontejner
+            const container = document.getElementById('prace-container');
+            
+            // Najdeme první roletku v kontejneru (slouží jako vzor)
+            const firstRow = container.querySelector('.prace-row');
+            
+            // Naklonujeme ji (včetně obsahu)
+            const newRow = firstRow.cloneNode(true);
+            
+            // Najdeme select uvnitř kopie a vyresetujeme jeho hodnotu
+            const select = newRow.querySelector('select');
+            select.value = ""; 
+            
+            // (Volitelné) Můžeme odstranit atribut 'required', pokud nechceme nutit vyplnit i tu druhou
+            select.removeAttribute('required'); 
+
+            // Přidáme kopii do kontejneru
+            container.appendChild(newRow);
+        });
+    </script>
 
     <button type="submit">Vytvořit objednávku</button>
 </form>

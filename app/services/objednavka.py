@@ -38,7 +38,9 @@ class ObjednavkaService:
             datum=db_obj["datum"],
             znacka=db_obj["znacka"],
             poznamka=db_obj.get("poznamka"),
-            stav=stav_nazev
+            stav=stav_nazev,
+            id_stavu=db_obj["ID_stavu"],  # <--- NOVÉ: doplňujeme ID
+            servisy=[]
         )
 
     def list_all(self) -> list[ObjednavkaPublic]:
@@ -59,6 +61,7 @@ class ObjednavkaService:
                     znacka=r["znacka"],
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev,
+                    id_stavu=r["ID_stavu"],
                     servisy=servisy
                 )
             )
@@ -82,6 +85,7 @@ class ObjednavkaService:
                     znacka=r["znacka"],
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev if stav_nazev else "Neznámý stav",
+                    id_stavu=r["ID_stavu"],
                     servisy=servisy
                 )
             )
@@ -148,7 +152,24 @@ class ObjednavkaService:
                     znacka=r["znacka"],
                     poznamka=r.get("poznamka"),
                     stav=stav_nazev,
+                    id_stavu=r["ID_stavu"],
                     servisy=servisy
                 )
             )
         return result
+
+
+    def delete(self, id_obj: int):
+        """Smaže objednávku, ale pouze pokud je Hotová (3) nebo Stornovaná (4)"""
+        # Nejdřív načteme aktuální stav z DB
+        obj = repo.get_objednavka_by_id(id_obj)
+        if not obj:
+            return # Objednávka neexistuje
+            
+        current_status = obj["ID_stavu"]
+        
+        # Kontrola stavu
+        if current_status in [3, 4]:
+            repo.delete_objednavka(id_obj)
+        else:
+            raise ValueError("Lze smazat pouze objednávky ve stavu Hotovo nebo Stornováno.")

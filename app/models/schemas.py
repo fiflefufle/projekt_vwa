@@ -72,6 +72,7 @@ class ObjednavkaPublic(BaseModel):
     datum: datetime
     znacka: str
     poznamka: Optional[str] = None
+    id_stavu: int
     stav: str
     servisy: list[ServisPublic] = []  # default prázdný seznam
 

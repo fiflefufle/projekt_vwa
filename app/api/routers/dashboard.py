@@ -6,6 +6,7 @@ from app.services.objednavka import ObjednavkaService
 from app.services.stavobjednavky import StavObjednavkyService
 from app.services.uzivatel import UzivatelService
 from app.services.prace import PraceService
+from app.models.schemas import UzivatelCreate
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -110,4 +111,103 @@ def pridel_mechanik(
     # Service vrstva pak správně zavolá repo_servis.assign_mechanik
     obj_service.assign_mechanik(id_servisu, id_mechanik_int)
 
+    return RedirectResponse("/dashboard/admin", status_code=303)
+
+# ---------------------------------
+# SPRÁVA UŽIVATELŮ (ADMIN)
+# ---------------------------------
+
+@router.get("/dashboard/admin/users", response_class=HTMLResponse)
+def admin_users_list(request: Request, user: dict = Depends(require_admin)):
+    """Zobrazí seznam uživatelů a formulář pro přidání"""
+    users = uzivatel_service.list_users()
+    roles = uzivatel_service.list_roles()
+    
+    return templates.TemplateResponse(
+        "manage_users.html", 
+        {"request": request, "users": users, "roles": roles}
+    )
+
+@router.post("/dashboard/admin/users/add")
+def admin_user_add(
+    login: str = Form(...),
+    password: str = Form(...),
+    jmeno: str = Form(...),
+    prijmeni: str = Form(...),
+    id_role: int = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """Zpracuje přidání nového uživatele"""
+    # Vytvoříme objekt schématu (heslo se zahashuje uvnitř service.create_user)
+    new_user_data = UzivatelCreate(
+        login=login,
+        heslo=password,
+        jmeno=jmeno,
+        prijmeni=prijmeni
+    )
+    
+    # Pozor: metoda create_user v service očekává "data" typu UzivatelCreate 
+    # a my musíme ještě nějak předat ID role, které ve schématu UzivatelCreate chybí?
+    # Rychlá oprava: AuthService.pridej_uzivatele to umí přímo. 
+    # Ale abychom drželi pořádek, použijeme AuthService nebo upravíme UzivatelService.
+    # PRO JEDNODUCHOST použijeme přímo auth_service, který už máš importovaný v login.py? 
+    # Ne, tady v dashboard.py nemáme AuthService.
+    
+    # Tákže: Nejčistší je zavolat repo přímo přes service wrapper, 
+    # ale musíme si poradit s tím hashováním.
+    # Service.create_user bere UzivatelCreate, ale tam není ID_role.
+    # UPRAVÍME RYCHLE VOLÁNÍ, abychom využili existující repo.create_user:
+    
+    from app.core.security import hash_password
+    hashed = hash_password(password)
+    
+    # Voláme přímo repo (nebo si na to udělej metodu v service, pokud chceš být purista)
+    from app.repositories import uzivatel as repo_uzivatel
+    repo_uzivatel.create_user(
+        login=login,
+        hashed_password=hashed,
+        id_role=id_role,
+        jmeno=jmeno,
+        prijmeni=prijmeni
+    )
+
+    return RedirectResponse("/dashboard/admin/users", status_code=303)
+
+@router.post("/dashboard/admin/users/delete")
+def admin_user_delete(
+    id_uzivatele: int = Form(...),
+    user: dict = Depends(require_admin)
+):
+    # Ochrana: Admin by neměl smazat sám sebe
+    if id_uzivatele == user["id"]:
+        raise HTTPException(400, "Nemůžete smazat sami sebe.")
+        
+    uzivatel_service.delete_user(id_uzivatele)
+    return RedirectResponse("/dashboard/admin/users", status_code=303)
+
+@router.post("/dashboard/admin/delete_objednavka")
+def delete_objednavka_admin(
+    id_obj: int = Form(...),
+    user: dict = Depends(require_admin)
+):
+    try:
+        obj_service.delete(id_obj)
+    except ValueError:
+        # Pokud by se admin pokusil smazat něco jiného (např. přes hacknutí formuláře)
+        raise HTTPException(400, "Tuto objednávku nelze smazat (není hotová ani stornovaná).")
+        
+    return RedirectResponse("/dashboard/admin", status_code=303)
+
+@router.post("/dashboard/admin/pridat_praci")
+def pridat_praci_admin(
+    id_obj: int = Form(...),
+    id_prace: int = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """
+    Umožní adminovi přidat další práci k existující objednávce.
+    """
+    # Použijeme existující service metodu
+    obj_service.add_prace(id_obj=id_obj, id_prace=id_prace)
+    
     return RedirectResponse("/dashboard/admin", status_code=303)

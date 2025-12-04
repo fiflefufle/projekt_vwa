@@ -11,8 +11,13 @@
         <nav>
             <a href="/">Domů</a> |
             <a href="/sluzby">Služby</a> |
-            <a href="/dashboard">Dashboard</a> |
-            <a href="/login">Přihlášení</a>
+            
+            {% if request.cookies.get("access_token") %}
+                <a href="/dashboard">Dashboard</a> |
+                <a href="/logout" style="color: #ffcccc;">Odhlásit se</a>
+            {% else %}
+                <a href="/login">Přihlášení</a>
+            {% endif %}
         </nav>
     </header>
 

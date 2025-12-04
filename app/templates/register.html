@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Registrace{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 0 auto;">
+    <h2>Registrace zákazníka</h2>
+
+    <form method="post" action="/register">
+        <label for="login">Login (přihlašovací jméno):</label>
+        <input type="text" id="login" name="login" value="{{ login or '' }}" required>
+
+        <label for="jmeno">Jméno:</label>
+        <input type="text" id="jmeno" name="jmeno" value="{{ jmeno or '' }}" required>
+
+        <label for="prijmeni">Příjmení:</label>
+        <input type="text" id="prijmeni" name="prijmeni" value="{{ prijmeni or '' }}" required>
+
+        <label for="password">Heslo:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="password_check">Heslo pro kontrolu:</label>
+        <input type="password" id="password_check" name="password_check" required>
+
+        <button type="submit">Zaregistrovat se</button>
+
+        {% if chyba %}
+            <p class="error-msg">{{ chyba }}</p>
+        {% endif %}
+    </form>
+
+    <p style="text-align: center; margin-top: 15px;">
+        Již máte účet? <a href="/login">Přihlaste se zde</a>.
+    </p>
+</div>
+{% endblock %}

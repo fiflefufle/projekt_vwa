@@ -84,3 +84,14 @@ def list_objednavky_for_mechanic(id_mechanik: int) -> list[dict]:
         """, (id_mechanik,)).fetchall()
 
     return [dict(r) for r in rows]
+
+def delete_objednavka(id_obj: int):
+    """Smaže objednávku a všechny její servisní položky."""
+    with open_conn() as c:
+        # 1. Nejdřív smažeme vazby v tabulce Servis
+        c.execute("DELETE FROM Servis WHERE ID_objednavky = ?", (id_obj,))
+        
+        # 2. Pak smažeme samotnou objednávku
+        c.execute("DELETE FROM Objednavka WHERE ID_objednavky = ?", (id_obj,))
+        
+        c.commit()

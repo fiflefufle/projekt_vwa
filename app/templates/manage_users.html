@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Správa uživatelů</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="/dashboard/admin" class="btn-small" style="background-color: #777;">&larr; Zpět na Dashboard</a>
+</div>
+
+<div style="background: #fff; padding: 20px; border: 1px solid #aaa; margin-bottom: 30px;">
+    <h3>Přidat nového uživatele</h3>
+    <form action="/dashboard/admin/users/add" method="post">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" name="login" placeholder="Login" required style="width: auto;">
+            <input type="password" name="password" placeholder="Heslo" required style="width: auto;">
+            <input type="text" name="jmeno" placeholder="Jméno" required style="width: auto;">
+            <input type="text" name="prijmeni" placeholder="Příjmení" required style="width: auto;">
+            
+            <select name="id_role" required style="width: auto;">
+                <option value="" disabled selected>-- Role --</option>
+                {% for r in roles %}
+                    <option value="{{ r.ID_role }}">{{ r.nazev_role }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn-small">Vytvořit</button>
+        </div>
+    </form>
+</div>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Login</th>
+        <th>Jméno</th>
+        <th>Role (ID)</th>
+        <th>Akce</th>
+    </tr>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.login }}</td>
+        <td>{{ u.jmeno }} {{ u.prijmeni }}</td>
+        <td>{{ u.role }}</td> <td>
+            <form action="/dashboard/admin/users/delete" method="post" onsubmit="return confirm('Opravdu smazat?');">
+                <input type="hidden" name="id_uzivatele" value="{{ u.id }}">
+                <button type="submit" style="background-color: #d9534f; font-size: 0.8em; padding: 2px 5px;">Smazat</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

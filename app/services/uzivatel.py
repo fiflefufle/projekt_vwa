@@ -1,4 +1,5 @@
 from app.repositories import uzivatel as repo
+from app.repositories import role as repo_role
 from app.models.schemas import UzivatelPublic, UzivatelCreate
 from app.core.security import hash_password
 from typing import List
@@ -24,8 +25,25 @@ class UzivatelService:
 
     def list_users(self) -> List[UzivatelPublic]:
         """Seznam všech uživatelů (pro admina)"""
-        rows = repo.list_users()
-        return [UzivatelPublic(**r) for r in rows]
+        rows = repo.get_user_list()
+        result = []
+        for r in rows:
+            # Musíme získat název role podle ID_role
+            role_info = repo_role.get_role_by_id(r["ID_role"])
+            role_nazev = role_info["nazev_role"] if role_info else "Neznámá"
+            
+            # Vytvoříme slovník pro Pydantic model
+            # Mapujeme ID_uzivatele -> id
+            user_dict = {
+                "id": r["ID_uzivatele"],
+                "login": r["login"],
+                "jmeno": r["jmeno"],
+                "prijmeni": r["prijmeni"],
+                "role": role_nazev  # Zde dosadíme string
+            }
+            result.append(UzivatelPublic(**user_dict))
+            
+        return result
 
     def update_password(self, id_uzivatele: int, heslo: str) -> bool:
         """Změní heslo uživatele"""
@@ -39,3 +57,11 @@ class UzivatelService:
     def list_mechanics(self):
         """Vrátí seznam všech mechaniků"""
         return repo.list_mechanics()
+
+    def delete_user(self, id_uzivatele: int) -> bool:
+        """Smaže uživatele podle ID"""
+        return repo.delete_user(id_uzivatele)
+
+    def list_roles(self) -> list[dict]:
+        """Vrátí seznam všech rolí (pro formulář na přidání uživatele)"""
+        return repo_role.list_roles()

@@ -3,6 +3,12 @@
 {% block content %}
 <h1>Jsi přihlášen jako admin!</h1>
 
+<div style="margin-bottom: 20px;">
+    <a href="/dashboard/admin/users" class="btn-small" style="background-color: #28a745; font-size: 14px; padding: 8px 15px; text-decoration: none; color: white;">
+        Spravovat uživatele
+    </a>
+</div>
+
 <table>
   <tr>
     <th>ID</th>
@@ -12,6 +18,7 @@
     <th>Stav</th>
     <th>Práce</th>
     <th>Mechanik (Přiřazení)</th>
+    <th>Akce</th>
   </tr>
   {% for o in objednavky %}
   <tr>
@@ -67,6 +74,18 @@
         <button type="submit" class="btn-small">Uložit</button>
     </form>
     {% endfor %}
+    </td>
+    <td>
+        {% if o.id_stavu == 3 or o.id_stavu == 4 %}
+            <form action="/dashboard/admin/delete_objednavka" method="post" onsubmit="return confirm('Opravdu smazat tuto objednávku? Tato akce je nevratná.');">
+                <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
+                <button type="submit" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                    Smazat
+                </button>
+            </form>
+        {% else %}
+            <span style="color: #aaa;">Nelze smazat</span>
+        {% endif %}
     </td>
 
   </tr>
