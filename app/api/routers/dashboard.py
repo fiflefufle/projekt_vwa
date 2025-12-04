@@ -7,6 +7,7 @@ from app.services.stavobjednavky import StavObjednavkyService
 from app.services.uzivatel import UzivatelService
 from app.services.prace import PraceService
 from app.models.schemas import UzivatelCreate
+from app.core.security import hash_password
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -159,8 +160,6 @@ def admin_user_add(
     # ale musíme si poradit s tím hashováním.
     # Service.create_user bere UzivatelCreate, ale tam není ID_role.
     # UPRAVÍME RYCHLE VOLÁNÍ, abychom využili existující repo.create_user:
-    
-    from app.core.security import hash_password
     hashed = hash_password(password)
     
     # Voláme přímo repo (nebo si na to udělej metodu v service, pokud chceš být purista)
