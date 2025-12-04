@@ -43,22 +43,6 @@ def assign_mechanik(id_servisu: int, id_mechanik: int) -> bool:
     return cur.rowcount > 0
 
 
-def get_servis_for_objednavka(id_obj: int) -> list[dict]:
-    """
-    Vrátí všechny servisní úkony u dané objednávky.
-    """
-    with open_conn() as c:
-        rows = c.execute("""
-            SELECT s.*, p.nazev AS prace_nazev
-            FROM Servis s
-            JOIN Prace p ON p.ID_prace = s.ID_prace
-            WHERE s.ID_objednavky = ?
-            ORDER BY s.ID_servisu
-        """, (id_obj,)).fetchall()
-
-    return [dict(r) for r in rows]
-
-
 def remove_prace(id_servisu: int) -> bool:
     """
     Odstraní jednu servisní položku z objednávky.

@@ -11,9 +11,8 @@
     <button type="submit">Přihlásit</button>
 
     {% if chyba %}
-    <p style="color: red;">{{ chyba }}</p>
+        <p class="error-msg">{{ chyba }}</p>
     {% endif %}
 
 </form>
-
 {% endblock %}

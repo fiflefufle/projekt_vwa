@@ -66,3 +66,21 @@ def list_objednavky_for_user(id_uzivatele: int) -> list[dict]:
         """, (id_uzivatele,)).fetchall()
 
     return [dict(r) for r in rows]
+
+def list_objednavky_for_mechanic(id_mechanik: int) -> list[dict]:
+    """
+    Vrátí objednávky, které mají alespoň jednu servisní položku
+    přiřazenou danému mechanikovi.
+    """
+    with open_conn() as c:
+        # DISTINCT je důležitý, aby se objednávka neopakovala, 
+        # pokud v ní má mechanik více úkolů.
+        rows = c.execute("""
+            SELECT DISTINCT o.*
+            FROM Objednavka o
+            JOIN Servis s ON o.ID_objednavky = s.ID_objednavky
+            WHERE s.ID_uzivatele = ?
+            ORDER BY o.datum ASC
+        """, (id_mechanik,)).fetchall()
+
+    return [dict(r) for r in rows]

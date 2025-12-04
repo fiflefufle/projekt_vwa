@@ -2,14 +2,16 @@
 
 {% block content %}
 <h1>Jsi přihlášen jako admin!</h1>
-<table border="1" cellpadding="5" cellspacing="0">
+
+<table>
   <tr>
     <th>ID</th>
     <th>Značka</th>
     <th>Datum</th>
     <th>Poznámka</th>
+    <th>Stav</th>
     <th>Práce</th>
-    <!--<th>Mechanik</th>-->
+    <th>Mechanik (Přiřazení)</th>
   </tr>
   {% for o in objednavky %}
   <tr>
@@ -17,38 +19,56 @@
     <td>{{ o.znacka }}</td>
     <td>{{ o.datum }}</td>
     <td>{{ o.poznamka }}</td>
+    <td>{{ o.stav }}</td>
     <td>
       {% for s in o.servisy %}
-        {{ s.prace_nazev }}<br>
+        <div class="work-item">
+            <strong>{{ s.prace_nazev }}</strong>
+            {% if s.id_mechanik %}
+                <br><small>(mechanik ID: {{ s.id_mechanik }})</small>
+            {% else %}
+                <br><small class="no-mechanic">(bez mechanika)</small>
+            {% endif %}
+        </div>
       {% endfor %}
-    </td> <!--
+
+      <form action="/dashboard/admin/pridat_praci" method="post" class="add-work-form">
+          <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
+          
+          <select name="id_prace" required>
+              <option value="" disabled selected>+ Přidat práci</option>
+              {% for p in prace %}
+                  <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+              {% endfor %}
+          </select>
+          
+          <button type="submit" class="btn-small">Přidat</button>
+      </form>
+    </td>
+    
     <td>
     {% for s in o.servisy %}
- <form action="/dashboard/admin/pridel_mechanik" method="post">
-    <input type="hidden" name="id_servisu" value="{{ s.id }}">
-    <select name="id_mechanik">
-         
-        <option value="" disabled {% if s.id_mechanik is none %}selected{% endif %}>
-            -- Vyber mechanika --
-        </option>
-
-        {% for m in mechanici %}
-            <option value="{{ m.id_uzivatele }}"
-                {% if s.id_mechanik == m.id_uzivatele %}selected{% endif %}>
-                {{ m.jmeno }} {{ m.prijmeni }}
-                <p>DEBUG: {{ s.id_mechanik }}</p>
-
+     <form action="/dashboard/admin/pridel_mechanik" method="post" class="work-item">
+        <input type="hidden" name="id_servisu" value="{{ s.id }}">
+        
+        <select name="id_mechanik">
+            <option value="" disabled {% if s.id_mechanik is none %}selected{% endif %}>
+                -- Vyber mechanika --
             </option>
-        {% endfor %}
-    </select>
 
-    <button type="submit">Uložit</button>
-</form>
+            {% for m in mechanici %}
+                <option value="{{ m.ID_uzivatele }}"
+                    {% if s.id_mechanik == m.ID_uzivatele %}selected{% endif %}>
+                    {{ m.jmeno }} {{ m.prijmeni }}
+                </option>
+            {% endfor %}
+        </select>
 
-{% endfor %}
-
+        <button type="submit" class="btn-small">Uložit</button>
+    </form>
+    {% endfor %}
     </td>
--->
+
   </tr>
   {% endfor %}
 </table>

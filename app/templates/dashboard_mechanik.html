@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Jsi přihlášen jako mechanik!</h1>
-<table border="1" cellpadding="5" cellspacing="0">
+<table>
   <tr>
     <th>ID</th>
     <th>Značka</th>
@@ -10,6 +10,7 @@
     <th>Poznámka</th>
     <th>Stav</th>
     <th>Akce</th>
+    <th>Změna stavu</th>
   </tr>
   {% for o in objednavky %}
   <tr>

@@ -5,12 +5,14 @@ from app.api.dependencies import get_current_user, require_user, require_mechani
 from app.services.objednavka import ObjednavkaService
 from app.services.stavobjednavky import StavObjednavkyService
 from app.services.uzivatel import UzivatelService
+from app.services.prace import PraceService
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 obj_service = ObjednavkaService()
 stav_service = StavObjednavkyService()
 uzivatel_service = UzivatelService()
+prace_service = PraceService()
 
 # ---------------------------------
 # /dashboard → přesměrování podle role
@@ -48,8 +50,11 @@ def dashboard_zakaznik(request: Request, user: dict = Depends(require_user)):
 # ---------------------------------
 @router.get("/dashboard/mechanik", response_class=HTMLResponse)
 def dashboard_mechanik(request: Request, user: dict = Depends(require_mechanik)):
-    objednavky = obj_service.list_all()
-    stavy = stav_service.list_all()  # všechny možné stavy
+    # PŮVODNĚ: objednavky = obj_service.list_all()
+    # NOVĚ: Filtrujeme podle ID přihlášeného mechanika (user["id"])
+    objednavky = obj_service.list_for_mechanik(user["id"])
+    
+    stavy = stav_service.list_all()
     return templates.TemplateResponse(
         "dashboard_mechanik.html",
         {"request": request, "objednavky": objednavky, "stavy": stavy}
@@ -70,11 +75,21 @@ def zmen_stav_mechanik(
 @router.get("/dashboard/admin", response_class=HTMLResponse)
 def dashboard_admin(request: Request, user: dict = Depends(require_admin)):
     objednavky = obj_service.list_all()
-    mechanici = uzivatel_service.list_mechanics()  # id_role=2
+    mechanici = uzivatel_service.list_mechanics()
     stavy = stav_service.list_all()
+    
+    # <--- 3. NAČÍST SEZNAM PRACÍ
+    vsechny_prace = prace_service.list_all()
+
     return templates.TemplateResponse(
         "dashboard_admin.html",
-        {"request": request, "objednavky": objednavky, "mechanici": mechanici, "stavy": stavy}
+        {
+            "request": request, 
+            "objednavky": objednavky, 
+            "mechanici": mechanici, 
+            "stavy": stavy,
+            "prace": vsechny_prace  # <--- 4. POSLAT DO ŠABLONY (klíč musí být "prace")
+        }
     )
 
 
@@ -87,11 +102,12 @@ def pridel_mechanik(
         raise HTTPException(400, "Musíte vybrat mechanika.")
 
     try:
-        id_mechanik = int(id_mechanik)
+        id_mechanik_int = int(id_mechanik)
     except ValueError:
         raise HTTPException(400, "Neplatná hodnota mechanika.")
 
-    # provést přiřazení do DB
-    repo_servis.update_mechanik(id_servisu, id_mechanik)
+    # OPRAVA: Voláme service vrstvu (obj_service), která už je nahoře inicializovaná.
+    # Service vrstva pak správně zavolá repo_servis.assign_mechanik
+    obj_service.assign_mechanik(id_servisu, id_mechanik_int)
 
     return RedirectResponse("/dashboard/admin", status_code=303)

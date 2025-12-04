@@ -86,3 +86,54 @@ footer {
     color: #555;
     text-align: center;
 }
+
+/* --- Doplňky pro formuláře a chybové hlášky --- */
+.error-msg {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.checkbox-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #aaa;
+    padding: 10px;
+    background: #fff;
+    margin-bottom: 15px;
+}
+
+.checkbox-label {
+    display: block;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+/* --- Styly pro Dashboard (Admin/Mechanik) --- */
+.work-item {
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.no-mechanic {
+    color: red;
+}
+
+.add-work-form {
+    margin-top: 10px;
+    border-top: 2px solid #eee;
+    padding-top: 10px;
+}
+
+.btn-small {
+    font-size: 0.8em;
+    padding: 2px 5px;
+    width: auto;      /* Aby tlačítko nebylo přes celou šířku */
+    display: inline-block;
+}
+
+/* Tabulky - vyčištění */
+table {
+    border: 1px solid #aaa; /* Náhrada za border="1" v HTML */
+}
