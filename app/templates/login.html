@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% block title %}Přihlášení{% endblock %}
 {% block content %}
 
 {% if request.query_params.get("registered") %}
-    <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px; text-align: center;">
+    <div class="alert alert-success">
         Registrace proběhla úspěšně. Nyní se můžete přihlásit.
     </div>
 {% endif %}
 
-<div style="max-width: 400px; margin: 0 auto;">
+<div class="auth-container">
     <h2>Přihlášení</h2>
     <form method="post" action="/login">
 
@@ -17,17 +18,17 @@
         <label for="password">Heslo:</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="submit">Přihlásit</button>
+        <button type="submit" class="btn-block">Přihlásit</button>
 
         {% if chyba %}
-        <p class="error-msg">{{ chyba }}</p>
+        <div class="alert alert-danger">{{ chyba }}</div>
         {% endif %}
 
     </form>
 
-    <p style="text-align: center; margin-top: 15px;">
+    <div class="auth-links">
         Nemáte ještě účet? <a href="/register">Zaregistrujte se</a>.
-    </p>
+    </div>
 </div>
 
 {% endblock %}

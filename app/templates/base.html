@@ -2,19 +2,22 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Autoservis{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
 </head>
 <body>
     <header>
-        <h1>Autoservis</h1>
+        <div class="logo">
+            <h1>Autoservis</h1>
+        </div>
         <nav>
-            <a href="/">Domů</a> |
-            <a href="/sluzby">Služby</a> |
+            <a href="/">Domů</a>
+            <a href="/sluzby">Služby</a>
             
             {% if request.cookies.get("access_token") %}
-                <a href="/dashboard">Dashboard</a> |
-                <a href="/logout" style="color: #ffcccc;">Odhlásit se</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/logout" class="logout-link">Odhlásit se</a>
             {% else %}
                 <a href="/login">Přihlášení</a>
             {% endif %}
@@ -26,7 +29,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 Autoservis</p>
+        <p>&copy; 2025 Autoservis. Všechna práva vyhrazena.</p>
     </footer>
 </body>
 </html>

@@ -3,58 +3,48 @@
 {% block title %}Nová objednávka{% endblock %}
 
 {% block content %}
-<h2>Nová objednávka</h2>
+<div class="auth-container" style="max-width: 600px;">
+    <h2>Nová objednávka</h2>
 
-<form method="post">
-    <label for="datum">Datum a čas:</label>
-    <input type="datetime-local" id="datum" name="datum" required>
+    <form method="post">
+        <label for="datum">Datum a čas:</label>
+        <input type="datetime-local" id="datum" name="datum" required>
 
-    <label for="znacka">Značka auta:</label>
-    <input type="text" id="znacka" name="znacka" required>
+        <label for="znacka">Značka auta:</label>
+        <input type="text" id="znacka" name="znacka" required>
 
-    <label for="poznamka">Poznámka:</label>
-    <textarea id="poznamka" name="poznamka" rows="3"></textarea>
+        <label for="poznamka">Poznámka:</label>
+        <textarea id="poznamka" name="poznamka" rows="3"></textarea>
 
-   <label>Požadované práce:</label>
-    
-    <div id="prace-container">
-        <div class="prace-row">
-            <select name="id_prace" required>
-                <option value="" disabled selected>-- Vyberte práci --</option>
-                {% for p in prace %}
-                    <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
-                {% endfor %}
-            </select>
+        <label>Požadované práce:</label>
+        <div id="prace-container">
+            <div class="prace-row">
+                <select name="id_prace" required>
+                    <option value="" disabled selected>-- Vyberte práci --</option>
+                    {% for p in prace %}
+                        <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
-    </div>
 
-    <button type="button" id="btn-pridat" class="btn-small" style="margin-top: 5px; margin-bottom: 15px;">
-        + Přidat další práci
-    </button>
+        <button type="button" id="btn-pridat" class="btn btn-secondary btn-small mb-2">
+            + Přidat další práci
+        </button>
 
-    <script>
-        document.getElementById('btn-pridat').addEventListener('click', function() {
-            // Najdeme kontejner
-            const container = document.getElementById('prace-container');
-            
-            // Najdeme první roletku v kontejneru (slouží jako vzor)
-            const firstRow = container.querySelector('.prace-row');
-            
-            // Naklonujeme ji (včetně obsahu)
-            const newRow = firstRow.cloneNode(true);
-            
-            // Najdeme select uvnitř kopie a vyresetujeme jeho hodnotu
-            const select = newRow.querySelector('select');
-            select.value = ""; 
-            
-            // (Volitelné) Můžeme odstranit atribut 'required', pokud nechceme nutit vyplnit i tu druhou
-            select.removeAttribute('required'); 
+        <button type="submit" class="btn-block btn-success">Vytvořit objednávku</button>
+    </form>
+</div>
 
-            // Přidáme kopii do kontejneru
-            container.appendChild(newRow);
-        });
-    </script>
-
-    <button type="submit">Vytvořit objednávku</button>
-</form>
+<script>
+    document.getElementById('btn-pridat').addEventListener('click', function() {
+        const container = document.getElementById('prace-container');
+        const firstRow = container.querySelector('.prace-row');
+        const newRow = firstRow.cloneNode(true);
+        const select = newRow.querySelector('select');
+        select.value = ""; 
+        newRow.classList.add('mt-2'); // Použití třídy místo inline stylu
+        container.appendChild(newRow);
+    });
+</script>
 {% endblock %}

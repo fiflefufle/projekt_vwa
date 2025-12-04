@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Vítejte v našem autoservisu!</h1>
-<p>Provádíme opravy, údržbu a nabízíme široký výběr služeb pro vaše vozidlo.</p>
-<a href="/sluzby">Seznam našich služeb</a>
-<a href="/login">Přihlásit se</a>
+<div class="hero-section">
+    <h1 class="hero-title">Vítejte v našem autoservisu!</h1>
+    <p class="hero-text">
+        Provádíme opravy, údržbu a nabízíme široký výběr služeb pro vaše vozidlo.
+    </p>
+    
+    <div>
+        <a href="/sluzby" class="btn btn-primary">Seznam našich služeb</a>
+        {% if not request.cookies.get("access_token") %}
+            <a href="/login" class="btn btn-secondary">Přihlásit se</a>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

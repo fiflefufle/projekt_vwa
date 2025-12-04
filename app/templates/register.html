@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-
 {% block title %}Registrace{% endblock %}
-
 {% block content %}
-<div style="max-width: 400px; margin: 0 auto;">
+
+<div class="auth-container">
     <h2>Registrace zákazníka</h2>
 
     <form method="post" action="/register">
@@ -22,15 +21,15 @@
         <label for="password_check">Heslo pro kontrolu:</label>
         <input type="password" id="password_check" name="password_check" required>
 
-        <button type="submit">Zaregistrovat se</button>
+        <button type="submit" class="btn-block">Zaregistrovat se</button>
 
         {% if chyba %}
-            <p class="error-msg">{{ chyba }}</p>
+            <div class="alert alert-danger">{{ chyba }}</div>
         {% endif %}
     </form>
 
-    <p style="text-align: center; margin-top: 15px;">
+    <div class="auth-links">
         Již máte účet? <a href="/login">Přihlaste se zde</a>.
-    </p>
+    </div>
 </div>
 {% endblock %}

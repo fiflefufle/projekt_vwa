@@ -1,54 +1,56 @@
 {% extends "base.html" %}
-
+{% block title %}Správa uživatelů{% endblock %}
 {% block content %}
+
 <h1>Správa uživatelů</h1>
 
-<div style="margin-bottom: 20px;">
-    <a href="/dashboard/admin" class="btn-small" style="background-color: #777;">&larr; Zpět na Dashboard</a>
+<div class="mb-2">
+    <a href="/dashboard/admin" class="btn btn-secondary">&larr; Zpět na Dashboard</a>
 </div>
 
-<div style="background: #fff; padding: 20px; border: 1px solid #aaa; margin-bottom: 30px;">
+<div class="auth-container w-100" style="margin: 0 0 2rem 0;">
     <h3>Přidat nového uživatele</h3>
-    <form action="/dashboard/admin/users/add" method="post">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" name="login" placeholder="Login" required style="width: auto;">
-            <input type="password" name="password" placeholder="Heslo" required style="width: auto;">
-            <input type="text" name="jmeno" placeholder="Jméno" required style="width: auto;">
-            <input type="text" name="prijmeni" placeholder="Příjmení" required style="width: auto;">
-            
-            <select name="id_role" required style="width: auto;">
-                <option value="" disabled selected>-- Role --</option>
-                {% for r in roles %}
-                    <option value="{{ r.ID_role }}">{{ r.nazev_role }}</option>
-                {% endfor %}
-            </select>
-            
-            <button type="submit" class="btn-small">Vytvořit</button>
-        </div>
+    <form action="/dashboard/admin/users/add" method="post" class="form-row-responsive">
+        <input type="text" name="login" placeholder="Login" required class="form-input-flex">
+        <input type="password" name="password" placeholder="Heslo" required class="form-input-flex">
+        <input type="text" name="jmeno" placeholder="Jméno" required class="form-input-flex">
+        <input type="text" name="prijmeni" placeholder="Příjmení" required class="form-input-flex">
+        
+        <select name="id_role" required class="form-input-flex">
+            <option value="" disabled selected>-- Role --</option>
+            {% for r in roles %}
+                <option value="{{ r.ID_role }}">{{ r.nazev_role }}</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn-primary m-0">Vytvořit</button>
     </form>
 </div>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Login</th>
-        <th>Jméno</th>
-        <th>Role (ID)</th>
-        <th>Akce</th>
-    </tr>
-    {% for u in users %}
-    <tr>
-        <td>{{ u.id }}</td>
-        <td>{{ u.login }}</td>
-        <td>{{ u.jmeno }} {{ u.prijmeni }}</td>
-        <td>{{ u.role }}</td> <td>
-            <form action="/dashboard/admin/users/delete" method="post" onsubmit="return confirm('Opravdu smazat?');">
-                <input type="hidden" name="id_uzivatele" value="{{ u.id }}">
-                <button type="submit" style="background-color: #d9534f; font-size: 0.8em; padding: 2px 5px;">Smazat</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table-container">
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Login</th>
+            <th>Jméno</th>
+            <th>Role</th>
+            <th>Akce</th>
+        </tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td><strong>{{ u.login }}</strong></td>
+            <td>{{ u.jmeno }} {{ u.prijmeni }}</td>
+            <td>{{ u.role }}</td>
+            <td>
+                <form action="/dashboard/admin/users/delete" method="post" onsubmit="return confirm('Opravdu smazat uživatele {{ u.login }}?');" class="m-0">
+                    <input type="hidden" name="id_uzivatele" value="{{ u.id }}">
+                    <button type="submit" class="btn-small btn-danger">Smazat</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
 {% endblock %}

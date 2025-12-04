@@ -1,44 +1,48 @@
 {% extends "base.html" %}
+{% block title %}Moje objednávky{% endblock %}
 {% block content %}
 
 <h2>Moje objednávky</h2>
 
-<a href="/objednavka/nova" class="btn btn-primary">Vytvořit novou objednávku</a>
-<br><br>
+<div class="dashboard-actions">
+    <a href="/objednavka/nova" class="btn btn-primary">➕ Vytvořit novou objednávku</a>
+</div>
 
 {% if objednavky %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Datum a čas</th>
-            <th>Značka</th>
-            <th>Poznámka</th>
-            <th>Stav</th>
-            <th>Práce</th> <!-- nový sloupec -->
-        </tr>
-        {% for o in objednavky %}
-        <tr>
-            <td>{{ o.id_objednavky }}</td>
-            <td>{{ o.datum }}</td>
-            <td>{{ o.znacka }}</td>
-            <td>{{ o.poznamka or "-" }}</td>
-            <td>{{ o.stav }}</td>
-            <td>
-                {% if o.servisy %}
-                    <ul>
-                    {% for s in o.servisy %}
-                        <li>{{ s.prace_nazev or "Neznámá práce" }}</li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    žádné servisní položky
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Datum a čas</th>
+                <th>Značka</th>
+                <th>Poznámka</th>
+                <th>Stav</th>
+                <th>Práce</th>
+            </tr>
+            {% for o in objednavky %}
+            <tr>
+                <td>{{ o.id_objednavky }}</td>
+                <td>{{ o.datum }}</td>
+                <td>{{ o.znacka }}</td>
+                <td>{{ o.poznamka or "-" }}</td>
+                <td>{{ o.stav }}</td>
+                <td>
+                    {% if o.servisy %}
+                        <ul class="service-list m-0 p-0">
+                        {% for s in o.servisy %}
+                            <li class="p-0 border-0">{{ s.prace_nazev or "Neznámá práce" }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="no-mechanic">žádné položky</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% else %}
-    <p>Žádné objednávky.</p>
+    <p>Nemáte zatím žádné objednávky.</p>
 {% endif %}
 
 {% endblock %}

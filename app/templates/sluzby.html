@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+{% block title %}Služby{% endblock %}
 
 {% block content %}
 <h1>Naše služby</h1>
-<ul>
+<ul class="service-list">
   {% for p in prace %}
-    <li>{{ p }}</li>
+    <li class="service-item">
+        🔧 {{ p }}
+    </li>
   {% endfor %}
 </ul>
 {% endblock %}

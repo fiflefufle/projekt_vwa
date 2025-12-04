@@ -1,139 +1,436 @@
-/* Reset některých default stylů */
-body, h1, h2, p, table, th, td, input, textarea, select, button {
+/* --- ZÁKLADNÍ NASTAVENÍ A PROMĚNNÉ --- */
+:root {
+    --primary-color: #0056b3;       /* Tmavší modrá */
+    --secondary-color: #6c757d;     /* Šedá */
+    --accent-color: #ffc107;        /* Žlutá pro zvýraznění */
+    --danger-color: #dc3545;        /* Červená pro chyby/mazání */
+    --success-color: #28a745;       /* Zelená pro úspěch */
+    --light-bg: #f8f9fa;            /* Světlé pozadí stránky */
+    --white: #ffffff;
+    --text-color: #333333;
+    --border-color: #dee2e6;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    line-height: 1.6;
 }
 
-/* Body a hlavní obsah */
-body {
-    background-color: #f7f7f7;
-    color: #333;
-    padding: 20px;
-}
-
+/* --- ROZVRŽENÍ (LAYOUT) --- */
 header {
-    background-color: #0057b7;
-    color: white;
-    padding: 10px 20px;
-    margin-bottom: 20px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 header h1 {
-    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    font-size: 1.5rem;
 }
 
-header nav a {
-    color: white;
+nav a {
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    margin-right: 15px;
+    margin-left: 15px;
+    font-weight: 500;
+    transition: color 0.3s;
 }
 
-header nav a:hover {
+nav a:hover {
+    color: var(--white);
     text-decoration: underline;
 }
 
-/* Tabulky */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+nav a.logout-link {
+    background-color: rgba(255,255,255,0.2);
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
-th, td {
-    border: 1px solid #aaa;
-    padding: 8px 12px;
-    text-align: left;
+nav a.logout-link:hover {
+    background-color: rgba(255,255,255,0.3);
+    text-decoration: none;
 }
 
-th {
-    background-color: #ddd;
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    min-height: 80vh;
 }
 
-/* Formuláře */
-form {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-}
-
-input, textarea, select, button {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 15px;
-    padding: 8px;
-    font-size: 14px;
-}
-
-button {
-    background-color: #0057b7;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-button:hover {
-    background-color: #003f8a;
-}
-
-/* Footer */
 footer {
-    margin-top: 40px;
-    font-size: 12px;
-    color: #555;
     text-align: center;
+    padding: 2rem;
+    background-color: #e9ecef;
+    color: #666;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
 }
 
-/* --- Doplňky pro formuláře a chybové hlášky --- */
-.error-msg {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
+/* --- TYPOGRAFIE A ODKAZY --- */
+h1, h2, h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
 }
 
-.checkbox-container {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #aaa;
-    padding: 10px;
-    background: #fff;
-    margin-bottom: 15px;
+a {
+    color: var(--primary-color);
+    text-decoration: none;
 }
 
-.checkbox-label {
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- FORMULÁŘE --- */
+form {
+    margin-bottom: 1rem;
+}
+
+label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="datetime-local"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+}
+
+/* --- TLAČÍTKA --- */
+button, .btn, .btn-primary {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.2s;
 }
 
-/* --- Styly pro Dashboard (Admin/Mechanik) --- */
-.work-item {
-    margin-bottom: 5px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 5px;
-}
-
-.no-mechanic {
-    color: red;
-}
-
-.add-work-form {
-    margin-top: 10px;
-    border-top: 2px solid #eee;
-    padding-top: 10px;
+button:hover, .btn:hover, .btn-primary:hover {
+    background-color: #004494;
+    text-decoration: none;
 }
 
 .btn-small {
-    font-size: 0.8em;
-    padding: 2px 5px;
-    width: auto;      /* Aby tlačítko nebylo přes celou šířku */
-    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
 }
 
-/* Tabulky - vyčištění */
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #bd2130;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* --- TABULKY --- */
+.table-container {
+    overflow-x: auto; /* Pro mobilní zařízení */
+}
+
 table {
-    border: 1px solid #aaa; /* Náhrada za border="1" v HTML */
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: #f1f3f5;
+    font-weight: 700;
+    color: #495057;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- KONTEJNERY PRO LOGIN/REGISTRACI --- */
+.auth-container {
+    max-width: 450px;
+    margin: 3rem auto;
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* --- SPECIFICKÉ PRVKY --- */
+.checkbox-scroll-container {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-item input {
+    width: auto;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+
+.alert {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger, .error-msg {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+/* --- DASHBOARD PRVKY --- */
+.dashboard-actions {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.work-item {
+    background-color: #fff;
+    border: 1px solid #eee;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.no-mechanic {
+    color: var(--danger-color);
+    font-style: italic;
+    font-size: 0.85em;
+}
+
+.mechanic-info {
+    font-size: 0.85em;
+    color: var(--secondary-color);
+}
+
+.add-work-form {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px dashed var(--border-color);
+}
+
+/* Flexbox utility */
+.d-flex {
+    display: flex;
+    align-items: center;
+}
+
+.flex-column {
+    flex-direction: column;
+    align-items: flex-start; /* Reset align-items */
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.gap-sm {
+    gap: 5px;
+}
+
+.gap-md {
+    gap: 10px;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+/* Velikosti a odsazení */
+.w-100 {
+    width: 100%;
+}
+
+.w-auto {
+    width: auto !important; /* Důležité pro přebití defaultního input width: 100% */
+}
+
+.m-0 {
+    margin: 0 !important;
+}
+
+.mt-2 {
+    margin-top: 10px;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+/* Specifické komponenty */
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.hero-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.hero-text {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--secondary-color);
+}
+
+.service-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.service-item {
+    background: var(--white);
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.1em;
+}
+
+.admin-work-cell {
+    min-width: 300px;
+}
+
+.inline-form {
+    margin: 0;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Formulářový řádek (pro admin users a register) */
+.form-row-responsive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.form-input-flex {
+    flex: 1;
+    min-width: 150px;
+    margin-bottom: 0 !important; /* Přebijeme defaultní margin inputu */
+}
+
+.text-muted {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+/* --- RESPONZIVITA --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav {
+        margin-top: 1rem;
+    }
+    
+    nav a {
+        margin: 0 5px;
+    }
+
+    input, select, button {
+        max-width: 100%;
+    }
 }
