@@ -1,0 +1,6 @@
+pyjwt
+bcrypt
+fastapi[standard]
+uvicorn
+pydantic
+jinja2

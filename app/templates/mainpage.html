@@ -1,17 +1,113 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="hero-section">
-    <h1 class="hero-title">Vítejte v našem autoservisu!</h1>
-    <p class="hero-text">
-        Provádíme opravy, údržbu a nabízíme široký výběr služeb pro vaše vozidlo.
-    </p>
-    
-    <div>
-        <a href="/sluzby" class="btn btn-primary">Seznam našich služeb</a>
-        {% if not request.cookies.get("access_token") %}
-            <a href="/login" class="btn btn-secondary">Přihlásit se</a>
-        {% endif %}
+
+<section class="hero-wrap">
+    <div class="hero-content">
+        <h1 class="hero-title">Profesionální péče o vaše auto</h1>
+        <p class="hero-subtitle">Spolehlivý autoservis s dlouholetou tradicí. Diagnostika, opravy, pneuservis.</p>
+        <div class="hero-buttons">
+            {% if request.cookies.get("access_token") %}
+                <a href="/objednavka/nova" class="btn btn-primary">📅 Objednat servis</a>
+            {% else %}
+                <a href="/login" class="btn btn-primary">📅 Objednat servis</a>
+            {% endif %}
+            
+            <a href="/sluzby" class="btn btn-secondary">Naše nabídka</a>
+        </div>
     </div>
-</div>
+</section>
+
+<section class="info-section">
+    <div class="main-grid">
+        
+        <article class="info-card">
+            <div class="card-header">
+                <h3>📞 Kontakt & Otevírací doba</h3>
+            </div>
+            <div class="card-body">
+                <p>Jsme tu pro vás každý všední den. V případě nouze nás neváhejte kontaktovat.</p>
+                
+                <table class="hours-table">
+                    <tr><td>Pondělí - Pátek</td><td>8:00 - 16:00</td></tr>
+                    <tr><td>Sobota a Neděle</td><td>Zavřeno</td></tr>
+                </table>
+
+                <div class="contact-links">
+                    <p><strong>Tel:</strong> +420 123 456 789</p>
+                    <p><strong>Email:</strong> info@autoservis.cz</p>
+                </div>
+                
+                <div class="card-footer-action">
+                    <a href="#" class="btn btn-primary btn-block">Více kontaktů</a>
+                </div>
+            </div>
+        </article>
+
+        <article class="info-card">
+            <div class="card-header">
+                <h3>📍 Kde nás najdete</h3>
+            </div>
+            <div class="card-body">
+                <p>Sídlíme v průmyslové zóně s výbornou dostupností a vlastním parkovištěm.</p>
+                <address>
+                    <strong>Autoservis</strong><br>
+                    Ulice Opravářská 123<br>
+                    100 00 Praha
+                </address>
+                
+                <div class="map-placeholder">
+                    <span>Zde bude obrázek mapy</span>
+                </div>
+                
+                <div class="card-footer-action">
+                    <a href="https://maps.google.com" target="_blank" class="btn btn-primary btn-block">Navigovat</a>
+                </div>
+            </div>
+        </article>
+
+        <article class="info-card">
+            <div class="card-header">
+                <h3>📢 Aktuality</h3>
+            </div>
+            <div class="card-body">
+                <ul class="news-list">
+                    <li>
+                        <span class="date">5. 12. 2025</span>
+                        <strong>Přezouvání na zimu</strong>
+                        <p>Nezapomeňte se včas objednat na výměnu pneumatik. Termíny se plní!</p>
+                    </li>
+                    <li>
+                        <span class="date">20. 11. 2025</span>
+                        <strong>Nová diagnostika</strong>
+                        <p>Zakoupili jsme nejmodernější diagnostiku pro vozy koncernu VW.</p>
+                    </li>
+                </ul>
+                    <div class="card-footer-action">
+                        <a href="#" class="btn btn-primary btn-block">Více novinek</a>
+                    </div>
+                </div>
+        </article>
+
+        <article class="info-card">
+            <div class="card-header">
+                <h3>🛠️ Co nabízíme?</h3>
+            </div>
+            <div class="card-body">
+                <p>Provádíme komplexní servis vozidel všech značek.</p>
+                <ul class="services-preview">
+                    <li>Pravidelné servisní prohlídky</li>
+                    <li>Výměny olejů a filtrů</li>
+                    <li>Opravy brzdových systémů</li>
+                    <li>Příprava a zajištění STK</li>
+                </ul>
+                <div class="card-footer-action">
+                    <a href="/sluzby" class="btn btn-primary btn-block">Zobrazit ceník služeb</a>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</section>
+
 {% endblock %}

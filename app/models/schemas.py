@@ -64,6 +64,19 @@ class StavObjednavky(BaseModel):
 
 
 # --------------------------
+# SERVIS
+# --------------------------
+class ServisPublic(BaseModel):
+    id: int
+    id_objednavky: int
+    id_mechanik: Optional[int] = None  # mechanik – bude mapováno z DB sloupce ID_uzivatele
+    id_prace: int
+    cas: Optional[float] = None
+    cena: Optional[float] = None
+    prace_nazev: Optional[str] = None
+
+
+# --------------------------
 # OBJEDNAVKA
 # --------------------------
 class ObjednavkaPublic(BaseModel):
@@ -83,17 +96,3 @@ class ObjednavkaCreate(BaseModel):
     datum: datetime
     znacka: str
     poznamka: Optional[str] = None
-
-
-# --------------------------
-# SERVIS
-# --------------------------
-class ServisPublic(BaseModel):
-    id: int
-    id_objednavky: int
-    id_mechanik: Optional[int] = None  # mechanik – bude mapováno z DB sloupce ID_uzivatele
-    id_prace: int
-    cas: Optional[float] = None
-    cena: Optional[float] = None
-    prace_nazev: Optional[str] = None
-

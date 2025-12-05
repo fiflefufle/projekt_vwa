@@ -2,7 +2,7 @@
    1. ZÁKLADNÍ NASTAVENÍ A PROMĚNNÉ
    ========================================= */
 :root {
-    --primary-color: #0056b3;       /* Modrá */
+    --primary-color: #005dc0;       /* Modrá */
     --secondary-color: #6c757d;     /* Šedá */
     --danger-color: #dc3545;        /* Červená */
     --success-color: #28a745;       /* Zelená */
@@ -39,6 +39,10 @@ header {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky; 
+    top: 0;         
+    z-index: 1000;   
+    width: 100%;     
 }
 
 header h1 { margin: 0; font-size: 1.5rem; }
@@ -222,3 +226,211 @@ th { background-color: #f1f3f5; font-weight: 700; color: #495057; }
 .alert { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
 .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+/* =========================================
+   8. NOVÁ MAINPAGE (Hero & Grid)
+   ========================================= */
+
+/* --- Hero Sekce (Velký úvodní banner) --- */
+.hero-wrap {
+    /* Pokud chceš fotku, změň background na: url('../img/servis-bg.jpg') no-repeat center center/cover */
+    background: linear-gradient(135deg, var(--primary-color), #001e3b);
+    color: var(--white);
+    padding: 4rem 2rem;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* --- Grid Systém pro karty --- */
+.info-section {
+    margin-bottom: 3rem;
+}
+
+.main-grid {
+    display: grid;
+    /* Dva sloupce, které se automaticky roztáhnou */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+    gap: 2rem;
+}
+
+/* Styl Karty */
+.info-card {
+    background: var(--white);
+    border: 1px solid var(--border-color); /* Zůstává stálý tenký rámeček */
+    border-radius: 8px;
+    
+    /* DŮLEŽITÉ: Skryje to, co přečuhuje (náš proužek), a umožní pozicování */
+    overflow: hidden; 
+    position: relative; 
+    
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* --- TOTO JE TEN BAREVNÝ PROUŽEK (Pseudo-element) --- */
+.info-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px; /* Výška proužku */
+    background-color: var(--primary-color); /* Modrá barva */
+    
+    /* Ve výchozím stavu proužek skryjeme (posunem nahoru nebo průhledností) */
+    opacity: 0; 
+    transition: opacity 0.3s ease;
+}
+
+/* --- EFEKT PŘI NAJETÍ MYŠÍ --- */
+.info-card:hover {
+    transform: translateY(-5px); /* Jemné nadzvednutí (to tam už máš) */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.info-card:hover::before {
+    /* Zviditelníme proužek */
+    opacity: 1;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+    flex-grow: 1; /* Aby se karta roztáhla na výšku */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Specifické styly uvnitř karet */
+.hours-table {
+    width: 100%;
+    margin: 1rem 0;
+    border: none;
+    box-shadow: none;
+}
+
+.hours-table td {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.contact-links p {
+    margin: 5px 0;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    margin: 1rem 0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.map-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Seznam novinek */
+.news-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.news-list li {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 1rem;
+}
+
+.news-list li:last-child {
+    border-bottom: none;
+}
+
+.news-list .date {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    margin-bottom: 3px;
+}
+
+/* Seznam služeb */
+.services-preview {
+    padding-left: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.services-preview li {
+    margin-bottom: 0.5rem;
+}
+
+.card-footer-action {
+    margin-top: auto; /* Tlačítko vždy dole */
+}
+
+/* Speciální zvýraznění 4. karty */
+.highlight-card {
+    border-top: 4px solid var(--accent-color, #ffc107);
+}
+
+/* Responzivita pro mobily */
+@media (max-width: 768px) {
+    .main-grid {
+        grid-template-columns: 1fr; /* Na mobilu pod sebou */
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+}

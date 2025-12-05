@@ -1,3 +1,5 @@
 stranka kontakt, oteviraci doba
 prace - pridat vic polozek a polozku neco jako "jine"
 jedno tlacitko ulozit na konci stranky
+
+pridane dalsi prace jsou ted povinne pri zakladani objednavky = bud moznost smazat ty dalsi pridane nebo volitelnost
