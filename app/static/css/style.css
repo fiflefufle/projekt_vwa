@@ -6,7 +6,7 @@
     --secondary-color: #6c757d;     /* Šedá */
     --danger-color: #dc3545;        /* Červená */
     --success-color: #28a745;       /* Zelená */
-    --light-bg: #f8f9fa;            /* Pozadí stránky */
+    --light-bg: #eef2f5;            /* Pozadí stránky */
     --white: #ffffff;
     --border-color: #dee2e6;
     --text-color: #333;
@@ -20,7 +20,14 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--light-bg);
+    
+    /* Barva pozadí */
+    background-color: #f4f7f9; /* Velmi světlá šedo-modrá */
+    
+    /* VZOR: Jemné tečky */
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px; /* Rozestup teček */
+    
     color: var(--text-color);
     line-height: 1.6;
     min-height: 100vh;
@@ -141,8 +148,18 @@ input, select, textarea {
     font-size: 0.9rem;
 }
 
-.w-time { width: 60px !important; }
-.w-price { width: 80px !important; }
+.w-time { 
+    width: 45px !important;       /* ZVĚTŠENO (bylo 35px) - aby se vešlo číslo */
+    text-align: center; 
+    flex-shrink: 0;               /* Nesmí se zmenšovat */
+} 
+
+.w-price { 
+    width: 70px !important;       /* FIXNÍ ŠÍŘKA - tak akorát pro cenu */
+    flex-grow: 0 !important;      /* ZÁKAZ ROZTAHOVÁNÍ - tohle je klíčové */
+    text-align: right; 
+    flex-shrink: 0;
+}
 .w-auto { width: auto !important; }
 
 /* Boxy pro login/registraci */
@@ -175,7 +192,16 @@ th, td {
     border-bottom: 1px solid var(--border-color);
 }
 
-th { background-color: #f1f3f5; font-weight: 700; color: #495057; }
+th {
+    /* Změna z bledě šedé na tmavší barvu pro kontrast */
+    background-color: #343a40; /* Tmavě šedá (téměř černá) */
+    color: #ffffff;            /* Bílý text */
+    font-weight: 600;
+    text-transform: uppercase; /* Volitelné: VELKÁ PÍSMENA pro hlavičku */
+    font-size: 0.85rem;        /* Menší písmo pro hlavičku působí profesionálněji */
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #495057;
+}
 
 /* =========================================
    6. UTILITY TŘÍDY (Pomocníci)
@@ -227,22 +253,165 @@ th { background-color: #f1f3f5; font-weight: 700; color: #495057; }
 .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
+/* --- ADMIN TABULKA: FINAL FIX (CSS ONLY) --- */
+
+td {
+    padding: 8px 10px;
+    vertical-align: top;
+    font-size: 0.9rem;
+}
+
+/* 1. PŘÍSNÁ DEFINICE ŠÍŘKY BUŇKY */
+.admin-work-cell {
+    width: 1%;              /* Trik pro tabulky: "buď co nejužší" */
+    white-space: nowrap;    /* Zabrání zalomení, pokud není specifikováno jinak */
+    padding: 6px !important;
+}
+
+.admin-split-container {
+    display: flex;
+    gap: 8px;
+    
+    /* ZMĚNA: Místo 290px dáme 100%, aby se to roztáhlo do celé šířky buňky (450px) */
+    width: 100%; 
+    min-width: 300px; /* Pouze pojistka, aby to nebylo moc úzké na mobilech */
+    max-width: none;  /* Odstraníme omezení */
+    
+    box-sizing: border-box;
+}
+
+/* --- LEVÁ ČÁST: SEZNAM PRACÍ --- */
+.works-column {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    align-content: start;
+    
+    /* Důležité: zabrání přetečení, pokud je text moc dlouhý */
+    min-width: 0; 
+}
+
+/* Dlaždice práce */
+.work-tile {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 4px 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    min-height: 55px;
+    width: 100%;
+}
+
+.work-tile-title {
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Řádek formuláře (Čas + Cena + Tlačítko) */
+.work-tile-form {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-top: auto;
+    width: 100%; /* Vyplnit dlaždici */
+}
+
+/* --- PRAVÁ ČÁST: OVLÁDACÍ PANEL --- */
+.actions-column {
+    width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 8px;
+    border-left: 1px dashed #ccc;
+}
+
+.action-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.action-label {
+    font-size: 0.65rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.action-form-row {
+    display: flex;
+    gap: 3px;
+}
+
+/* --- INPUTY A JEJICH VELIKOSTI --- */
+.input-tile, .select-compact, .btn-small {
+    height: 24px !important;
+    line-height: 22px !important;
+    padding: 0 3px !important;
+    font-size: 0.75rem !important;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin: 0 !important;
+}
+
+/* --- OPRAVA VELIKOSTÍ POLÍ --- */
+
+/* Čas: trochu širší, aby se vešlo číslo */
+.w-time { 
+    width: 45px !important; 
+    text-align: center;
+    flex-shrink: 0; 
+} 
+
+/* Cena: FIXNÍ šířka, ŽÁDNÉ roztahování (flex-grow: 0) */
+.w-price { 
+    width: 70px !important;  
+    flex-grow: 0 !important; 
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* Tlačítko Uložit */
+.btn-save-tile {
+    width: 24px !important;
+    padding: 0 !important;
+    flex-shrink: 0;
+}
+
 /* =========================================
    8. NOVÁ MAINPAGE (Hero & Grid)
    ========================================= */
 
 /* --- Hero Sekce (Velký úvodní banner) --- */
 .hero-wrap {
-    /* Pokud chceš fotku, změň background na: url('../img/servis-bg.jpg') no-repeat center center/cover */
-    background: linear-gradient(135deg, var(--primary-color), #001e3b);
+    /* Tmavý filtr přes fotku, aby byl text čitelný */
+    background: 
+        linear-gradient(to right, rgba(0, 30, 60, 0.9), rgba(0, 30, 60, 0.6)), 
+        url('https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+    
     color: var(--white);
-    padding: 4rem 2rem;
+    padding: 5rem 2rem; /* Trochu jsem to zvětšil pro wau efekt */
     border-radius: 8px;
     margin-bottom: 3rem;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Výraznější stín */
     position: relative;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .hero-content {
@@ -433,4 +602,345 @@ th { background-color: #f1f3f5; font-weight: 700; color: #495057; }
     .hero-title {
         font-size: 1.8rem;
     }
+}
+
+/* --- TLAČÍTKA PRO HERO SEKCI --- */
+
+/* Zvětšení tlačítek v Hero sekci */
+.hero-buttons .btn {
+    padding: 0.8rem 2rem; /* Větší polstrování */
+    font-size: 1.1rem;    /* Větší text */
+    font-weight: 700;
+}
+
+/* Průhledné tlačítko (Vedlejší akce - Ghost Button) */
+.btn-outline-white {
+    background-color: transparent;
+    color: var(--white);
+    border: 2px solid rgba(255, 255, 255, 0.7); /* Jemný bílý rámeček */
+}
+
+.btn-outline-white:hover {
+    background-color: var(--white);
+    color: var(--primary-color); /* Při najetí se změní na bílé s modrým textem */
+    border-color: var(--white);
+}
+
+/* =========================================
+   9. STRÁNKA SLUŽEB (Grid karet)
+   ========================================= */
+
+/* Grid systém - automaticky zalamuje karty */
+.services-grid {
+    display: grid;
+    /* Karty budou mít min. šířku 280px, jinak se roztáhnou */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Vzhled jedné karty */
+.service-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: flex-start; /* Zarovnání nahoru */
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover efekt - karta se "vznese" */
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+/* Ikona vlevo (v kroužku) */
+.service-icon-wrapper {
+    background-color: #eef2f7; /* Světle modré pozadí */
+    color: var(--primary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Kruh */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Aby se kruh nedeformoval */
+}
+
+.icon-large {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* Textový obsah */
+.service-content {
+    flex-grow: 1;
+}
+
+.service-title {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.service-meta {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+/* --- GOOGLE MAPA --- */
+.map-container {
+    width: 100%;
+    margin: 1rem 0;
+    border-radius: 4px;
+    overflow: hidden; /* Aby rohy mapy nepřetékaly přes radius */
+    border: 1px solid var(--border-color);
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 250px; /* Výška mapy */
+    border: 0;
+    display: block; /* Odstraní mezeru pod mapou */
+}
+
+/* --- OPRAVA IKON A TLAČÍTEK --- */
+
+/* 1. Definice velikosti ikon (aby nebyly obrovské) */
+.icon {
+    width: 1.2em;        /* Velikost fontu + kousek */
+    height: 1.2em;
+    vertical-align: text-bottom;
+    fill: currentColor;  /* Barva podle textu */
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* 2. Tlačítka přes celou šířku */
+.btn-block {
+    display: flex;       /* Flexbox pro zarovnání ikony a textu */
+    width: 100%;         /* Roztáhnout na 100% rodiče */
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Zajištění, že footer karty tlačítko roztáhne */
+.card-footer-action {
+    width: 100%;
+    margin-top: auto;
+}
+
+/* =========================================
+   9. STRÁNKA SLUŽEB (Grid karet)
+   ========================================= */
+
+/* Hero sekce pro služby */
+.services-hero {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.services-intro {
+    color: var(--secondary-color);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Grid systém - automaticky zalamuje karty */
+.services-grid {
+    display: grid;
+    /* Karty budou mít min. šířku 280px, jinak se roztáhnou */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Vzhled jedné karty */
+.service-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: flex-start; /* Zarovnání nahoru */
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover efekt - karta se "vznese" */
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+/* Ikona vlevo (v kroužku) */
+.service-icon-wrapper {
+    background-color: #eef2f7; /* Světle modré pozadí */
+    color: var(--primary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Kruh */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Aby se kruh nedeformoval */
+}
+
+.icon-large {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* Textový obsah */
+.service-content {
+    flex-grow: 1;
+}
+
+.service-title {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.service-meta {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+/* Specifická ikona pro metadata (hodiny) */
+.icon-meta {
+    width: 1em;
+    height: 1em;
+    margin-right: 4px;
+    fill: #999;
+}
+
+/* Call to Action sekce dole */
+.services-cta {
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.btn-cta {
+    margin-top: 10px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+}
+
+/* --- ZVĚTŠENÍ "PRÁCE & MECHANICI" --- */
+
+/* 1. Nadpis práce (Výměna oleje atd.) */
+.work-tile-title {
+    font-size: 0.9rem;  /* Zvětšeno z 0.75rem */
+    font-weight: 700;
+    margin-bottom: 6px;
+    white-space: normal; /* Povolí zalamování dlouhých názvů */
+}
+
+/* 2. Zvětšení inputů, selectů a malých tlačítek v tomto sloupci */
+.input-tile, .select-compact, .btn-small {
+    height: 32px !important;      /* Zvětšeno z 24px -> lépe se na to kliká */
+    line-height: 30px !important;
+    font-size: 0.9rem !important; /* Zvětšeno z 0.75rem -> čitelnější */
+    padding: 0 6px !important;
+}
+
+/* 3. Popisky (Mechanik, Nová práce) */
+.action-label {
+    font-size: 0.75rem; /* Zvětšeno z 0.65rem */
+    margin-bottom: 2px;
+    display: block;
+}
+
+/* 4. Celková výška dlaždice */
+.work-tile {
+    min-height: auto;
+    padding: 8px; /* Více prostoru uvnitř */
+}
+
+/* --- ÚPRAVA SLOUPCE "AKCE" (SMAZAT) --- */
+
+/* Třída, kterou přidáme do HTML k buňce s tlačítkem */
+.cell-actions {
+    vertical-align: middle !important; /* Zarovnání svisle na střed */
+    text-align: center;                /* Zarovnání vodorovně na střed */
+}
+
+/* Větší tlačítko smazat */
+.btn-delete-big {
+    height: 40px !important;    /* Standardní výška */
+    padding: 0 20px !important; /* Širší */
+    font-size: 1rem !important; /* Normální písmo */
+    width: 100%;                /* Nebo 'auto', pokud ho nechceš roztažené */
+    max-width: 120px;           /* Aby nebylo gigantické */
+}
+
+.dashboard-actions {
+    margin-bottom: 20px; /* Odsazení 20px směrem dolů */
+}
+
+/* =========================================
+   11. SPRÁVA UŽIVATELŮ (Horizontální formulář)
+   ========================================= */
+
+/* Box pro přidání uživatele (nahrazuje auth-container v adminu) */
+.user-add-box {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.user-add-box h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+/* Samotný formulář v řádku */
+.admin-form-horizontal {
+    display: flex;
+    flex-wrap: wrap;    /* Na mobilu se zalomí pod sebe */
+    gap: 10px;          /* Mezera mezi políčky */
+    align-items: center;
+}
+
+/* Inputy uvnitř tohoto formuláře */
+.admin-form-horizontal input,
+.admin-form-horizontal select {
+    flex: 1;                /* Všechna pole se roztáhnou stejně */
+    min-width: 140px;       /* Minimální šířka, aby se dalo psát */
+    margin-bottom: 0 !important; /* Odstraníme spodní odsazení */
+}
+
+/* Tlačítko Vytvořit */
+.admin-form-horizontal button {
+    flex: 0 0 auto;         /* Tlačítko se nebude roztahovat */
+    width: auto;            /* Šířka podle textu */
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0 !important;
 }

@@ -2,18 +2,51 @@
 {% block title %}Služby{% endblock %}
 
 {% block content %}
-<h1>Naše služby</h1>
-<ul class="service-list">
+
+<div class="services-hero">
+    <h1>Ceník a nabídka služeb</h1>
+    <p class="services-intro">
+        Nabízíme kompletní péči o vaše vozidlo. Ceny jsou orientační a mohou se lišit dle typu vozu a náročnosti.
+    </p>
+</div>
+
+<div class="services-grid">
   {% for p in prace %}
-    <li class="service-item d-flex align-items-center gap-md">
-        <span><strong>{{ p.nazev_prace }}</strong></span>
+    <article class="service-card">
+        <div class="service-icon-wrapper">
+            <svg class="icon-large" viewBox="0 0 24 24">
+                <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+            </svg>
+        </div>
         
-        {% if p.odhad_hodin %}
-            <span class="text-muted" style="font-size: 0.9em;">
-                (cca {{ p.odhad_hodin }} hod.)
-            </span>
-        {% endif %}
-    </li>
+        <div class="service-content">
+            <h3 class="service-title">{{ p.nazev_prace }}</h3>
+            
+            {% if p.odhad_hodin %}
+                <div class="service-meta">
+                    <svg class="icon icon-meta" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                    <span>Časová náročnost: <strong>cca {{ p.odhad_hodin }} hod.</strong></span>
+                </div>
+            {% endif %}
+        </div>
+    </article>
   {% endfor %}
-</ul>
+</div>
+
+<div class="services-cta">
+    <h3>Našli jste, co potřebujete?</h3>
+    {% if request.cookies.get("access_token") %}
+                <a href="/objednavka/nova" class="btn btn-primary">
+                    Objednat servis
+                </a>
+            {% else %}
+                <a href="/login" class="btn btn-primary">
+                    Objednat servis
+                </a>
+            {% endif %}
+    </a>
+</div>
+
 {% endblock %}

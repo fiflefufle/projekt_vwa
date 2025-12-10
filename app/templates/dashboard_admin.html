@@ -28,73 +28,78 @@
             <td>{{ o.stav }}</td>
             
             <td class="admin-work-cell">
-                {% for s in o.servisy %}
-                    <div class="work-item-separator d-flex flex-column gap-sm">
-                        <div style="font-weight: bold;">{{ s.prace_nazev }}</div>
+                <div class="admin-split-container">
+                    
+                    <div class="works-column">
+                        {% for s in o.servisy %}
+                            <div class="work-tile">
+                                <div class="work-tile-title" title="{{ s.prace_nazev }}">
+                                    {{ s.prace_nazev }}
+                                </div>
+                                
+                                <form action="/dashboard/admin/nacenit_praci" method="post" class="work-tile-form">
+                                    <input type="hidden" name="id_servisu" value="{{ s.id }}">
+                                    
+                                    <input type="number" step="0.1" name="cas" value="{{ s.cas or '' }}" required 
+                                           class="input-tile w-time" placeholder="h" title="Počet hodin">
+                                           
+                                    <input type="number" step="1" name="cena" value="{{ s.cena or '' }}" 
+                                           class="input-tile w-price" placeholder="Kč" title="Cena celkem">
+                                           
+                                    <button type="submit" class="btn-small btn-secondary" title="Uložit">💾</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="actions-column">
                         
-                        {% if s.id_mechanik %}
-                            <div class="text-muted" style="font-size: 0.85em;">
-                                ID mechanika: {{ s.id_mechanik }}
-                            </div>
-                        {% endif %}
+                        <div class="action-box">
+                            <span class="action-label">Mechanik</span>
+                            <form action="/dashboard/admin/pridel_mechanik_objednavka" method="post" class="action-form-row">
+                                <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
+                                <select name="id_mechanik" class="select-compact select-action">
+                                    <option value="" disabled selected>-</option>
+                                    {% for m in mechanici %}
+                                        <option value="{{ m.ID_uzivatele }}" 
+                                            {% if o.servisy and o.servisy[0].id_mechanik == m.ID_uzivatele %}selected{% endif %}>
+                                            {{ m.prijmeni }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn-small btn-secondary">OK</button>
+                            </form>
+                        </div>
 
-                        <form action="/dashboard/admin/nacenit_praci" method="post" class="inline-form mt-2 pricing-box">
-                            <input type="hidden" name="id_servisu" value="{{ s.id }}">
-                            
-                            <div class="d-flex gap-sm align-items-center">
-                                <label class="label-compact">Čas (h):</label>
-                                <input type="number" step="0.1" name="cas" value="{{ s.cas or '' }}" required 
-                                       class="input-compact w-time" placeholder="0.0">
-                                       
-                                <label class="label-compact">Cena:</label>
-                                <input type="number" step="1" name="cena" value="{{ s.cena or '' }}" 
-                                       class="input-compact w-price" placeholder="Auto">
-                                       
-                                <button type="submit" class="btn-small btn-secondary" title="Uložit odhad">💾</button>
-                            </div>
-                        </form>
+                        <div class="action-box">
+                            <span class="action-label">Nová práce</span>
+                            <form action="/dashboard/admin/pridat_praci" method="post" class="action-form-row">
+                                <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
+                                <select name="id_prace" required class="select-compact select-action">
+                                    <option value="" disabled selected>+</option>
+                                    {% for p in prace %}
+                                        <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn-small btn-primary">+</button>
+                            </form>
+                        </div>
+
                     </div>
-                {% endfor %}
-
-                <div class="mechanic-assign-box">
-                    <div class="mechanic-assign-title">Hlavní mechanik zakázky:</div>
-                    <form action="/dashboard/admin/pridel_mechanik_objednavka" method="post" class="inline-form">
-                        <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
-                        <select name="id_mechanik" class="select-compact">
-                            <option value="" disabled selected>-- Vybrat --</option>
-                            {% for m in mechanici %}
-                                <option value="{{ m.ID_uzivatele }}" 
-                                    {% if o.servisy and o.servisy[0].id_mechanik == m.ID_uzivatele %}selected{% endif %}>
-                                    {{ m.jmeno }} {{ m.prijmeni }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn-small btn-secondary">Přiřadit</button>
-                    </form>
                 </div>
-
-                <form action="/dashboard/admin/pridat_praci" method="post" class="add-work-form">
-                    <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
-                    <div class="d-flex gap-sm">
-                        <select name="id_prace" required class="select-compact" style="flex-grow: 1;">
-                            <option value="" disabled selected>+ Přidat práci</option>
-                            {% for p in prace %}
-                                <option value="{{ p.ID_prace }}">{{ p.nazev_prace }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn-small">Přidat</button>
-                    </div>
-                </form>
             </td>
 
-            <td>
-                {% if o.id_stavu == 1 or o.id_stavu == 3 or o.id_stavu == 4 %}
+            <td class="cell-actions"> {% if o.id_stavu == 1 or o.id_stavu == 3 or o.id_stavu == 4 %}
                     <form action="/dashboard/admin/delete_objednavka" method="post" onsubmit="return confirm('Opravdu smazat?');" class="m-0">
                         <input type="hidden" name="id_obj" value="{{ o.id_objednavky }}">
-                        <button type="submit" class="btn-small btn-danger">Smazat</button>
+                        
+                        <button type="submit" class="btn btn-danger btn-delete-big">
+                            Smazat
+                        </button>
+                        
                     </form>
                 {% else %}
-                    <span class="text-muted">Aktivní</span>
+                    <span class="text-muted" style="font-weight: bold;">Aktivní</span>
                 {% endif %}
             </td>
         </tr>
