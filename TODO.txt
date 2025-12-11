@@ -2,3 +2,6 @@ stranka kontakt
 jedno tlacitko ulozit na konci stranky
 rozepsat nejake poznamky jako: kdyz vyberes jine, napis do poznamky atd = udelat blbuvzdorny
 pridane dalsi prace jsou ted povinne pri zakladani objednavky = bud moznost smazat ty dalsi pridane nebo volitelnost
+ceník
+platby hotove i kartou
+prihlasen jako xxx zmenit

@@ -1,6 +1,5 @@
-pyjwt
-bcrypt
 fastapi[standard]
-uvicorn
-pydantic
-jinja2
+bcrypt
+pyjwt
+
+zbytek se instaluje zároveň s fastapi (pydantic, uvicorn, jinja2)
