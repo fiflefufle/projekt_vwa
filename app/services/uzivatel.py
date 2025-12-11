@@ -5,10 +5,8 @@ from app.core.security import hash_password
 from typing import List
 
 class UzivatelService:
-    """Service vrstva pro uživatele"""
 
     def create_user(self, data: UzivatelCreate) -> UzivatelPublic:
-        """Vytvoří nového uživatele s hashovaným heslem"""
         hashed = hash_password(data.heslo)
         db_obj = repo.create_user(
             login=data.login,
@@ -19,77 +17,58 @@ class UzivatelService:
         return UzivatelPublic(**db_obj)
 
     def get_user(self, id_uzivatele: int) -> UzivatelPublic | None:
-        """Detail uživatele s mapováním polí pro Pydantic"""
-        # 1. Načteme surová data z DB (obsahují ID_uzivatele, ID_role...)
         r = repo.get_by_id(id_uzivatele)
         
         if not r:
             return None
-            
-        # 2. Zjistíme název role (protože UzivatelPublic chce 'role' jako string)
         role_info = repo_role.get_role_by_id(r["ID_role"])
         role_nazev = role_info["nazev_role"] if role_info else "Neznámá"
 
-        # 3. Přemapujeme klíče z DB na klíče, které chce Pydantic
         user_dict = {
-            "id": r["ID_uzivatele"],        # DB: ID_uzivatele -> Pydantic: id
+            "id": r["ID_uzivatele"],
             "login": r["login"],
             "jmeno": r["jmeno"],
             "prijmeni": r["prijmeni"],
-            "role": role_nazev              # DB: ID_role -> Pydantic: role (název)
+            "role": role_nazev
         }
 
-        # 4. Vrátíme správný objekt
         return UzivatelPublic(**user_dict)
 
     def list_users(self) -> List[UzivatelPublic]:
-        """Seznam všech uživatelů (pro admina)"""
         rows = repo.get_user_list()
         result = []
         for r in rows:
-            # Musíme získat název role podle ID_role
             role_info = repo_role.get_role_by_id(r["ID_role"])
             role_nazev = role_info["nazev_role"] if role_info else "Neznámá"
             
-            # Vytvoříme slovník pro Pydantic model
-            # Mapujeme ID_uzivatele -> id
             user_dict = {
                 "id": r["ID_uzivatele"],
                 "login": r["login"],
                 "jmeno": r["jmeno"],
                 "prijmeni": r["prijmeni"],
-                "role": role_nazev  # Zde dosadíme string
+                "role": role_nazev
             }
             result.append(UzivatelPublic(**user_dict))
             
         return result
 
     def update_password(self, id_uzivatele: int, heslo: str) -> bool:
-        """Změní heslo uživatele"""
         hashed = hash_password(heslo)
         return repo.set_new_password(hashed, id_uzivatele)
 
     def update_name(self, id_uzivatele: int, jmeno: str, prijmeni: str) -> bool:
-        """Změní jméno a příjmení uživatele"""
         return repo.set_new_user_full_name(jmeno, prijmeni, id_uzivatele)
 
     def list_mechanics(self):
-        """Vrátí seznam všech mechaniků"""
         return repo.list_mechanics()
 
     def delete_user(self, id_uzivatele: int) -> bool:
-        """Smaže uživatele podle ID"""
         return repo.delete_user(id_uzivatele)
 
     def list_roles(self) -> list[dict]:
-        """Vrátí seznam všech rolí (pro formulář na přidání uživatele)"""
         return repo_role.list_roles()
 
     def update_user_complete(self, id_uzivatele: int, data: UzivatelCreate, new_role_id: int):
-        """
-        Upraví uživatele.
-        """
-        # 1. Update základních dat (voláme tu novou funkci z repozitáře)
         repo.update_user_data(
             id_uzivatele=id_uzivatele,
             login=data.login,
@@ -97,10 +76,6 @@ class UzivatelService:
             prijmeni=data.prijmeni,
             id_role=new_role_id
         )
-        
-        # 2. Update hesla (jen pokud bylo zadáno)
         if data.heslo and len(data.heslo.strip()) > 0:
             hashed = hash_password(data.heslo)
-            
-            # ZDE VOLÁME TVOU EXISTUJÍCÍ FUNKCI
             repo.set_new_password(id_uzivatele, hashed)

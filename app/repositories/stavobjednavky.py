@@ -6,7 +6,6 @@ def list_stavy() -> list[dict]:
     return [dict(r) for r in rows]
 
 def get_stav_by_id(id_stavu: int) -> str | None:
-    """Vrátí název stavu podle ID."""
     with open_conn() as c:
         r = c.execute("SELECT nazev_stavu FROM StavObjednavky WHERE ID_stavu = ?", (id_stavu,)).fetchone()
     return r["nazev_stavu"] if r else None

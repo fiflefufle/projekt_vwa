@@ -15,26 +15,22 @@ def get_conn() -> Iterator:
     with open_conn() as conn:
         yield conn
 
-
 # ---------------------------------
 # Aktuální uživatel podle JWT
 # ---------------------------------
 def get_current_user(token: str | None = Cookie(default=None, alias=ACCESS_COOKIE)):
-    # 1. Pokud token chybí -> Login
     if not token:
         return RedirectResponse(url="/login", status_code=303)
 
     try:
         payload = decode_access_token(token)
     except ValueError:
-        # 2. Pokud je token neplatný/expirovaný -> Login
         return RedirectResponse(url="/login", status_code=303)
 
     user_id = int(payload["sub"])
     user = repo_uzivatel.get_by_id(user_id)
     
     if not user:
-        # 3. Uživatel smazán z DB, ale má token -> Login
         return RedirectResponse(url="/login", status_code=303)
 
     role_data = repo_role.get_role_by_id(user["ID_role"])
@@ -48,8 +44,6 @@ def get_current_user(token: str | None = Cookie(default=None, alias=ACCESS_COOKI
         "login": user["login"],
         "role": role_name
     }
-
-
 
 # ---------------------------------
 # Role-based ochrana

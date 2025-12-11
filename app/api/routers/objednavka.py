@@ -14,23 +14,14 @@ templates = Jinja2Templates(directory="app/templates")
 obj_service = ObjednavkaService()
 prace_service = PraceService()
 
-# ---------------------------------
-# Formulář na vytvoření objednávky (GET)
-# ---------------------------------
 @router.get("/objednavka/nova", response_class=HTMLResponse)
 def nova_objednavka_form(request: Request, user: dict = Depends(require_user)):
-    prace = prace_service.list_all()  # načte všechny práce
+    prace = prace_service.list_all()
     return templates.TemplateResponse(
         "objednavka_nova.html",
-        {
-            "request": request,
-            "prace": prace
-        }
+        {"request": request, "prace": prace}
     )
 
-# ---------------------------------
-# POST: vytvoření objednávky
-# ---------------------------------
 @router.post("/objednavka/nova")
 def nova_objednavka_submit(
     request: Request,
@@ -40,18 +31,15 @@ def nova_objednavka_submit(
     poznamka: str = Form(""),
     id_prace: List[int] = Form(...)
 ):
-    # 1. Převod na datetime
     try:
         datum_obj = datetime.fromisoformat(datum)
     except ValueError:
         return _vratit_formular_s_chybou(request, user, "Neplatný formát data.", datum, znacka, poznamka)
 
-    # 2. VALIDACE: Minulost
     if datum_obj < datetime.now():
         return _vratit_formular_s_chybou(request, user, "Nelze objednat termín v minulosti.", datum, znacka, poznamka)
 
-    # 3. VALIDACE: Otevírací doba (např. 8:00 - 16:00, Pondělí-Pátek)
-    if datum_obj.weekday() >= 5: # 5 a 6 je víkend
+    if datum_obj.weekday() >= 5:
          return _vratit_formular_s_chybou(request, user, "O víkendu máme zavřeno.", datum, znacka, poznamka)
          
     start_hour = 8
@@ -76,9 +64,6 @@ def nova_objednavka_submit(
     return RedirectResponse("/dashboard/zakaznik", status_code=303)
 
 def _vratit_formular_s_chybou(request, user, chyba_msg, datum="", znacka="", poznamka=""):
-    """
-    Vrátí formulář s chybou a PŘEDVYPLNĚNÝMI daty, aby je uživatel nemusel psát znovu.
-    """
     prace = prace_service.list_all()
     return templates.TemplateResponse(
         "objednavka_nova.html",
@@ -86,7 +71,6 @@ def _vratit_formular_s_chybou(request, user, chyba_msg, datum="", znacka="", poz
             "request": request,
             "prace": prace,
             "chyba": chyba_msg,
-            # Posíláme data zpět do šablony
             "datum": datum,
             "znacka": znacka,
             "poznamka": poznamka

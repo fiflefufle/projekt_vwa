@@ -1,0 +1,1 @@
+v requirements.txt jsou knihovny potřebné pro spustění, ERD_final.png obsahuje upravenou verzi ERD, protože jsem v průběhu psaní logiky pro stránky zjistil, že mi v návrhu chybí pár podstatných věcí.

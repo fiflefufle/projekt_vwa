@@ -1,12 +1,7 @@
 from app.models.db import open_conn
 
-
 def add_prace_to_objednavka(id_obj: int, id_prace: int, id_mechanik: int | None = None,
                             cas: float | None = None, cena: float | None = None) -> dict | None:
-    """
-    Přidá záznam do Servis - tedy 1 servisní úkon k objednávce.
-    UNIQUE(id_objednavky, id_prace) → hlídá, aby se práce neopakovala.
-    """
     with open_conn() as c:
         try:
             cur = c.execute("""
@@ -15,7 +10,6 @@ def add_prace_to_objednavka(id_obj: int, id_prace: int, id_mechanik: int | None 
             """, (id_obj, id_prace, id_mechanik, cas, cena))
             c.commit()
         except Exception:
-            # práce už možná existuje pro danou objednávku
             return None
 
     return {
@@ -29,9 +23,6 @@ def add_prace_to_objednavka(id_obj: int, id_prace: int, id_mechanik: int | None 
 
 
 def assign_mechanik(id_servisu: int, id_mechanik: int) -> bool:
-    """
-    Přiřadí mechanika k servisní práci.
-    """
     with open_conn() as c:
         cur = c.execute("""
             UPDATE Servis
@@ -44,9 +35,6 @@ def assign_mechanik(id_servisu: int, id_mechanik: int) -> bool:
 
 
 def remove_prace(id_servisu: int) -> bool:
-    """
-    Odstraní jednu servisní položku z objednávky.
-    """
     with open_conn() as c:
         cur = c.execute("""
             DELETE FROM Servis WHERE ID_servisu = ?
@@ -73,7 +61,6 @@ def list_servisy_for_objednavka(id_obj: int) -> list[dict]:
     return [dict(r) for r in rows]
 
 def update_servis_price_time(id_servisu: int, cas: float | None, cena: float | None):
-    """Aktualizuje čas a cenu u servisní položky"""
     with open_conn() as c:
         c.execute("""
             UPDATE Servis
@@ -83,9 +70,6 @@ def update_servis_price_time(id_servisu: int, cas: float | None, cena: float | N
         c.commit()
     
 def assign_mechanik_to_whole_order(id_obj: int, id_mechanik: int):
-    """
-    Přiřadí mechanika ke VŠEM servisním úkonům v dané objednávce.
-    """
     with open_conn() as c:
         c.execute("""
             UPDATE Servis

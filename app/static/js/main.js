@@ -18,15 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (dateInput) {
         const now = new Date();
-        
-        // Trik pro získání lokálního času ve formátu ISO (prohlížeče jinak vrací UTC)
-        // Odečteme časový posun, aby to odpovídalo našemu času
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        
-        // Ořízneme sekundy a milisekundy, zbyde: "YYYY-MM-DDTHH:MM"
         const currentDateTime = now.toISOString().slice(0, 16);
-        
-        // Nastavíme atribut min
         dateInput.min = currentDateTime;
     }
 

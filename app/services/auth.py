@@ -11,13 +11,12 @@ from app.repositories.role import get_role_by_id
 class AuthService:
 
     def login(self, login: str, password: str) -> str:
-        """Ověří uživatele podle loginu a hesla (case-insensitive)."""
-        login = login.lower()  # převede vstup na malá písmena
+        login = login.lower() 
         u = get_by_login(login)
         if not u or not verify_password(password, u["heslo"]):
             raise ValueError("Neplatné přihlášení")
 
-        role = get_role_by_id(u["ID_role"])   # jedna role podle DB struktury
+        role = get_role_by_id(u["ID_role"])
 
         token = create_access_token(
             sub=str(u["ID_uzivatele"]),
@@ -28,14 +27,12 @@ class AuthService:
 
 
     def user_data(self, user_id: int) -> dict:
-        """Vrátí data přihlášeného uživatele."""
         return get_by_id(user_id)
 
 
     def pridej_uzivatele(self, login: str, jmeno: str, prijmeni: str,
                         password: str, id_role: int):
-        """Vytvoří nového uživatele (login je case-insensitive)."""
-        login = login.lower()  # uložíme vždy malé písmeno
+        login = login.lower() 
         if get_by_login(login):
             return {"chyba": "Login již existuje"}
 
@@ -51,6 +48,5 @@ class AuthService:
 
 
     def set_new_password(self, user_id: int, password: str):
-        """Nastaví nové heslo uživateli."""
         hashed = hash_password(password)
         return set_new_password(user_id, hashed)

@@ -9,25 +9,35 @@ from typing import List
 HOURLY_RATE = 800.0
 
 class ObjednavkaService:
-    """Service vrstva pro objednávky"""
 
-    # --- POMOCNÁ METODA PRO MAPOVÁNÍ (NOVÉ) ---
     def _map_servisy(self, servisy_db: list[dict]) -> list[ServisPublic]:
-        return [
-            ServisPublic(
+        mapped = []
+        for s in servisy_db:
+            cas = s.get("cas")
+            cena = s.get("cena")
+            if cas is None:
+                prace_info = repo_prace.get_by_id(s["ID_prace"])
+                if prace_info and prace_info.get("odhad_hodin"):
+                    cas = float(prace_info["odhad_hodin"])
+            
+            if cena is None and cas is not None:
+                try:
+                    cena = float(cas) * HOURLY_RATE
+                except ValueError:
+                    pass
+
+            mapped.append(ServisPublic(
                 id=s["ID_servisu"],
                 id_objednavky=s["ID_objednavky"],
                 id_mechanik=s.get("ID_uzivatele"),
                 id_prace=s["ID_prace"],
-                cas=s.get("cas"),
-                cena=s.get("cena"),
+                cas=cas,
+                cena=cena,
                 prace_nazev=s.get("prace_nazev")
-            )
-            for s in servisy_db
-        ]
+            ))
+        return mapped
 
     def create(self, id_uzivatele: int, data: ObjednavkaCreate) -> ObjednavkaPublic:
-        # ... (zůstává stejné) ...
         db_obj = repo.create_objednavka(
             id_uzivatele=id_uzivatele,
             datum=data.datum,
@@ -42,7 +52,7 @@ class ObjednavkaService:
             znacka=db_obj["znacka"],
             poznamka=db_obj.get("poznamka"),
             stav=stav_nazev,
-            id_stavu=db_obj["ID_stavu"],  # <--- NOVÉ: doplňujeme ID
+            id_stavu=db_obj["ID_stavu"],
             servisy=[]
         )
 
@@ -99,32 +109,18 @@ class ObjednavkaService:
         return result
 
     def get(self, id_obj: int) -> ObjednavkaPublic | None:
-        """Detail objednávky podle ID"""
         r = repo.get_objednavka_by_id(id_obj)
         return ObjednavkaPublic(**r) if r else None
 
-    # ... (zbytek metod create, get, update_stav... zůstává stejný)
-    
-    # METODY PRO MECHANIKA A PRÁCI (Wrappery)
-    # Tady je vidět, že vlastně jen přeposíláš volání do repo_servis.
-    # To je v pořádku, ale pokud bys chtěl být důsledný, mohl bys používat ServisService.
-    # Pro teď je ale lepší nechat to takhle, aby se nerozbilo volání v routeru.
     def update_stav(self, id_obj: int, id_stavu: int) -> bool:
         return repo.update_stav(id_obj, id_stavu)
 
     def add_prace(self, id_obj: int, id_prace: int, id_mechanik: int | None = None,
                   cas: float | None = None, cena: float | None = None):
-        """
-        Přiřadí práci k objednávce.
-        Pokud není zadán čas/cena, pokusí se je načíst z definice práce (default).
-        """
-        
-        # Pokud nebylo zadáno ručně (např. adminem), zkusíme najít default v DB
         if cas is None:
             prace_info = repo_prace.get_by_id(id_prace)
             if prace_info and prace_info.get("odhad_hodin"):
                 cas = float(prace_info["odhad_hodin"])
-                # Rovnou předpočítáme cenu (pokud není zadaná)
                 if cena is None:
                     cena = cas * HOURLY_RATE
 
@@ -139,32 +135,13 @@ class ObjednavkaService:
     def assign_mechanik(self, id_servisu: int, id_mechanik: int) -> bool:
         return repo_servis.assign_mechanik(id_servisu, id_mechanik)
 
-
-
     def list_for_mechanik(self, id_mechanik: int) -> list[ObjednavkaPublic]:
-        """Seznam objednávek pouze pro konkrétního mechanika"""
-        # Zde voláme novou funkci z repozitáře
         rows = repo.list_objednavky_for_mechanic(id_mechanik)
-        
         result = []
         for r in rows:
-            # Zbytek logiky je stejný jako v list_all - načteme stav a servisní položky
             stav_nazev = repo_stav.get_stav_by_id(r["ID_stavu"]) or "Neznámý stav"
             servisy_db = repo_servis.list_servisy_for_objednavka(r["ID_objednavky"])
-            
-
-            servisy = [
-                ServisPublic(
-                    id=s["ID_servisu"],
-                    id_objednavky=s["ID_objednavky"],
-                    id_mechanik=s.get("ID_uzivatele"),
-                    id_prace=s["ID_prace"],
-                    cas=s.get("cas"),
-                    cena=s.get("cena"),
-                    prace_nazev=s.get("prace_nazev")
-                )
-                for s in servisy_db
-            ]
+            servisy = self._map_servisy(servisy_db)
 
             result.append(
                 ObjednavkaPublic(
@@ -176,36 +153,25 @@ class ObjednavkaService:
                     stav=stav_nazev,
                     id_stavu=r["ID_stavu"],
                     servisy=servisy,
-                    
                 )
             )
         return result
 
-
     def delete(self, id_obj: int):
-        """Smaže objednávku, ale pouze pokud je Hotová (3) nebo Stornovaná (4)"""
-        # Nejdřív načteme aktuální stav z DB
         obj = repo.get_objednavka_by_id(id_obj)
         if not obj:
-            return # Objednávka neexistuje
-            
+            return
         current_status = obj["ID_stavu"]
         
-        # Kontrola stavu
         if current_status in [1, 3, 4]:
             repo.delete_objednavka(id_obj)
         else:
             raise ValueError("Lze smazat pouze objednávky ve stavu Hotovo nebo Stornováno.")
 
     def nacenit_praci(self, id_servisu: int, cas: float, cena: float = None):
-        """
-        Admin zadá čas. Pokud nezadá cenu, vypočítá se automaticky (čas * sazba).
-        """
         if cena is None or cena == 0:
             cena = cas * HOURLY_RATE
-            
         repo_servis.update_servis_price_time(id_servisu, cas, cena)
 
     def assign_mechanik_to_order(self, id_obj: int, id_mechanik: int):
-        """Přiřadí mechanika k celé objednávce"""
         repo_servis.assign_mechanik_to_whole_order(id_obj, id_mechanik)

@@ -16,10 +16,10 @@
         <input type="datetime-local" id="datePicker" name="datum" value="{{ datum or '' }}" required>
         <small class="text-muted" style="display: block; margin-top: -10px; margin-bottom: 15px;">Otevírací doba: Po-Pá 8:00 - 16:00</small>
 
-        <label for="znacka">Značka auta:</label>
+        <label for="znacka">Značka vozu:</label>
         <input type="text" id="znacka" name="znacka" value="{{ znacka or '' }}" required>
 
-        <label for="poznamka">Poznámka:</label>
+        <label for="poznamka">Uveďte pokud možno konkrétní model a rok výroby Vašeho vozu a stručně popište problém:</label>
         <textarea id="poznamka" name="poznamka" rows="3">{{ poznamka or '' }}</textarea>
 
         <label>Požadované práce:</label>

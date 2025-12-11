@@ -1,4 +1,3 @@
-# app/repositories/role.py
 from app.models.db import open_conn
 
 def list_roles() -> list[dict]:

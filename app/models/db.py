@@ -8,7 +8,7 @@ DB_PATH = "app/app.db"
 def open_conn() -> Iterator[sqlite3.Connection]:
     conn = sqlite3.connect(
         DB_PATH,
-        check_same_thread=False,   # ← DŮLEŽITÉ: povolí použití v jiném vlákně
+        check_same_thread=False,
     )
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
